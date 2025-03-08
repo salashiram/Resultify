@@ -1,0 +1,101 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100vh;
+  background: #333;
+  color: white;
+  transition: left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.burger-icon {
+  position: fixed;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background: #333;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 30px;
+  border-radius: 5px;
+  z-index: 1100;
+}
+
+.burger-icon.inside {
+  left: 210px;
+  position: absolute;
+  top: 0px;
+  z-index: 1101;
+}
+
+.sidebar-content ul {
+  list-style: none;
+  padding: 20px;
+  margin: 0;
+}
+
+.sidebar-content ul li {
+  padding: 10px;
+}
+
+.sidebar-content ul li a {
+  color: white;
+  text-decoration: none;
+  display: block;
+}
+
+.sidebar-content ul li:hover {
+  background: #444;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: #555;
+  margin: 10px 0;
+}
+
+.profile-section {
+  /* background: #222; */
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #555;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.profile-info p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.profile-info small {
+  color: #aaa;
+  cursor: pointer;
+}
+
+.profile-info small:hover {
+  color: white;
+}
