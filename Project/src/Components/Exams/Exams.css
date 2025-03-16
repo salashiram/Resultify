@@ -1,0 +1,82 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  /* max-width: 600px; */
+  height: 100%;
+  margin: auto;
+  /* margin-top: 100px; */
+  background: white;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 20px;
+  padding-bottom: 20px;
+}
+
+.option-content {
+  width: 100%;
+  padding: 20px;
+}
+.option-content button {
+  background-color: white;
+  width: 150px;
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+.option-content button:hover {
+  color: white;
+  background-color: #2e2e2e;
+  transition: 0.2s ease-in-out;
+}
+
+.search-content {
+  width: 100%;
+  align-items: center;
+  border-radius: 18px;
+  padding: 10px;
+  /* position: relative; */
+}
+
+.content-bx {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  padding: 5px;
+}
+
+.content-bx input {
+  width: 100%;
+  padding: 10px;
+  outline: none;
+  border: none;
+  background: gainsboro;
+  border-radius: 20px;
+  margin-right: 20px;
+}
+
+.content-bx button {
+  background-color: white;
+  position: absolute;
+  right: 0;
+  width: 150px;
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+.content-bx button:hover {
+  color: white;
+  background-color: #2e2e2e;
+  transition: 0.2s ease-in-out;
+}
