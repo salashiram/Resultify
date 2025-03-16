@@ -69,4 +69,32 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get("/users/:id", authenticateToken, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await sequelize.query("call spUserDetails(:user_id);", {
+      replacements: { user_id: id },
+    });
+
+    if (!result) {
+      res.status(409).json({
+        ok: false,
+        status: 409,
+        message: "empty",
+      });
+    }
+
+    res.json({
+      ok: true,
+      data: result,
+    });
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({
+      ok: false,
+      message: "Error fetching user data",
+    });
+  }
+});
+
 module.exports = router;

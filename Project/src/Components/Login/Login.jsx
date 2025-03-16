@@ -1,12 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
+  const [loginData, setLoginData] = useState({
+    logEmail: "",
+    logPassword: "",
+  });
+
   const navigate = useNavigate(); // Crear el hook de navegación
 
-  const loginValidate = (e) => {
-    navigate("/Home");
+  const loginValidate = async (e) => {
+    e.preventDefault();
+
+    try {
+      console.log("Datos eviados", {
+        email: loginData.logEmail,
+        password: loginData.logPassword,
+      });
+
+      const response = await axios.post("http://localhost:3001/api/v1/login", {
+        email: loginData.logEmail,
+        password: loginData.logPassword,
+      });
+
+      console.log(response.data);
+      if (response.status == 200) {
+        console.log("login successfully");
+        localStorage.setItem("token", response.data.token);
+        console.log(response.data.token);
+        navigate("/Home");
+      }
+    } catch (err) {
+      console.error("Error al iniciar sesión:", err.response || err);
+      alert(err.response?.data?.message || "Las credenciales no son válidas");
+    }
   };
 
   return (
@@ -18,7 +47,12 @@ const Login = () => {
           <input
             type="email"
             id="email"
+            name="logEmail"
             placeholder="Ingresa tu correo"
+            value={loginData.logEmail}
+            onChange={(e) =>
+              setLoginData({ ...loginData, logEmail: e.target.value })
+            }
             required
           />
 
@@ -26,7 +60,12 @@ const Login = () => {
           <input
             type="password"
             id="password"
+            name="logPassword"
             placeholder="Ingresa tu contraseña"
+            value={loginData.logPassword}
+            onChange={(e) =>
+              setLoginData({ ...loginData, logPassword: e.target.value })
+            }
             required
           />
 

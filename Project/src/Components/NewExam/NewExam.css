@@ -9,7 +9,6 @@
 .exam-container {
   display: flex;
   width: 100%;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   padding: 50px;
   gap: 20px;
 }

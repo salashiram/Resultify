@@ -7,20 +7,31 @@ const Dashboard = () => {
   return (
     <div>
       <SideBar />
-      <div className="option-content">
-        <Link to="/NewExam">
-          <button>Nuevo examen</button>
-        </Link>
-      </div>
       <div className="dashboard-container">
-        {/* <div className="dash-top-content">
-          <h1>Dashboard</h1>
-        </div> */}
-
-        <div className="search-content">
-          <div className="content-bx">
-            <input type="text" />
-            <button>Buscar</button>
+        <div class="">
+          <div class="cards">
+            <a href="/Exams">
+              <div class="card card-1">
+                <div class="card__icon">
+                  <i class="fas fa-bolt"></i>
+                </div>
+                <p class="card__exit">
+                  <i class="fas fa-times"></i>
+                </p>
+                <h2 class="card__title card__link">Examenes</h2>
+              </div>
+            </a>
+            <a href="/Users">
+              <div class="card card-2">
+                <div class="card__icon">
+                  <i class="fas fa-bolt"></i>
+                </div>
+                <p class="card__exit">
+                  <i class="fas fa-times"></i>
+                </p>
+                <h2 class="card__title">Usuarios</h2>
+              </div>
+            </a>
           </div>
         </div>
       </div>

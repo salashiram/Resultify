@@ -9,10 +9,8 @@
   flex-direction: column;
   align-items: center;
   width: 90%;
-  /* max-width: 600px; */
   height: 100%;
   margin: auto;
-  /* margin-top: 100px; */
   background: white;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -21,62 +19,73 @@
   padding-bottom: 20px;
 }
 
-.option-content {
-  width: 100%;
-  padding: 20px;
-}
-.option-content button {
-  background-color: white;
-  width: 150px;
-  padding: 10px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: 0.2s ease-in-out;
-}
-.option-content button:hover {
-  color: white;
-  background-color: #2e2e2e;
-  transition: 0.2s ease-in-out;
-}
-
-.search-content {
-  width: 100%;
-  align-items: center;
-  border-radius: 18px;
-  padding: 10px;
-  /* position: relative; */
-}
-
-.content-bx {
-  width: 100%;
+.cards {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.cards a {
+  text-decoration: none;
+}
+
+.card {
+  margin: 20px;
+  padding: 20px;
+  width: 250px;
+  min-height: 200px;
+  display: grid;
+  grid-template-rows: 20px 50px 1fr 50px;
+  border-radius: 10px;
+  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s;
   text-align: center;
+}
+
+.card:hover {
+  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
+  transform: scale(1.01);
+}
+
+.card__link,
+.card__exit,
+.card__icon {
   position: relative;
-  padding: 5px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.content-bx input {
-  width: 100%;
-  padding: 10px;
-  outline: none;
-  border: none;
-  background: gainsboro;
-  border-radius: 20px;
-  margin-right: 20px;
+.card__exit {
+  grid-row: 1/2;
+  justify-self: end;
 }
 
-.content-bx button {
-  background-color: white;
-  position: absolute;
-  right: 0;
-  width: 150px;
-  padding: 10px;
-  border-radius: 20px;
-  cursor: pointer;
+.card__icon {
+  grid-row: 2/3;
+  font-size: 30px;
 }
-.content-bx button:hover {
-  color: white;
-  background-color: #2e2e2e;
-  transition: 0.2s ease-in-out;
+
+.card__title {
+  grid-row: 3/4;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+.card__apply {
+  grid-row: 4/5;
+  align-self: center;
+}
+
+.card-1 {
+  background: #2e2e2e;
+}
+
+.card-2 {
+  background: #2e2e2e;
+}
+
+@media (max-width: 1600px) {
+  .cards {
+    justify-content: center;
+  }
 }

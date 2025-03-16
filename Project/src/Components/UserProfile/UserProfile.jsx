@@ -1,46 +1,77 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import SideBar from "../SideBar/Sidebar";
+import { jwtDecode } from "jwt-decode";
 import "./UserProfile.css";
 
 const UserProfile = () => {
-  const user = {
-    fullName: "Juan Pérez",
-    username: "@juanperez",
-    profilePic: "",
-    bannerPic: "https://via.placeholder.com/800x200",
-    email: "juanperez@example.com",
-    phone: "+52 123 456 7890",
-    location: "Ciudad de México, México",
-    bio: "Desarrollador web apasionado por React y Node.js 🚀",
-  };
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const decoded = jwtDecode(token);
+        const userId = decoded.id;
+
+        const response = await fetch(
+          `http://localhost:3001/api/v1/users/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const result = await response.json();
+        if (result.ok) {
+          setUserData(result.data[0]);
+        }
+      } catch (error) {
+        console.error("Error al obtener los datos del usuario:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (!userData) {
+    return <p>Cargando...</p>;
+  }
 
   return (
     <div>
       <SideBar />
       <div className="profile-container">
         <div className="banner">
-          <img src={user.bannerPic} alt="Banner" className="banner-img" />
+          <img
+            src="https://via.placeholder.com/800x200"
+            alt="Banner"
+            className="banner-img"
+          />
           <div className="profile-picture">
-            <img src={user.profilePic} alt="Perfil" />
+            <img src="https://via.placeholder.com/150" alt="Perfil" />
           </div>
         </div>
 
         <div className="user-info">
-          <h2>{user.fullName}</h2>
-          <p className="username">{user.username}</p>
+          <h2>{`${userData.first_name} ${userData.last_name}`}</h2>
+          <p className="username">@{userData.username}</p>
 
           <div className="details">
             <p>
-              <strong>Email:</strong> {user.email}
+              <strong>Email:</strong> {userData.email}
             </p>
             <p>
-              <strong>Teléfono:</strong> {user.phone}
+              <strong>Teléfono:</strong>{" "}
+              {userData.phone_number || "No disponible"}
             </p>
             <p>
-              <strong>Ubicación:</strong> {user.location}
-            </p>
-            <p>
-              <strong>Biografía:</strong> {user.bio}
+              <strong>Fecha de nacimiento: </strong>
+              {userData.birth_date || "No disponible"}
             </p>
           </div>
         </div>
