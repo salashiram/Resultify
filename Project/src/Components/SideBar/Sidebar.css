@@ -8,7 +8,7 @@
   position: fixed;
   top: 0;
   left: -250px;
-  width: 250px;
+  width: 260px;
   height: 100vh;
   background: #333;
   color: white;
@@ -38,7 +38,7 @@
 }
 
 .burger-icon.inside {
-  left: 210px;
+  left: 250px;
   position: absolute;
   top: 0px;
   z-index: 1101;

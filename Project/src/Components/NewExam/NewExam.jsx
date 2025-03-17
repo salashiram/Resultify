@@ -68,7 +68,8 @@ const NewExam = () => {
     <div>
       <SideBar />
       <div className="option-content">
-        <button>Guardar examen</button>
+        <button>Guardar</button>
+        <button>Limpiar</button>
       </div>
       <div className="exam-container">
         <div className="left-content">

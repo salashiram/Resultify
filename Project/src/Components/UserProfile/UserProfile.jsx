@@ -59,19 +59,12 @@ const UserProfile = () => {
 
         <div className="user-info">
           <h2>{`${userData.first_name} ${userData.last_name}`}</h2>
-          <p className="username">@{userData.username}</p>
+          <p className="username">@{userData.email}</p>
 
           <div className="details">
             <p>
-              <strong>Email:</strong> {userData.email}
-            </p>
-            <p>
-              <strong>Teléfono:</strong>{" "}
+              <strong>Teléfono de contacto:</strong>{" "}
               {userData.phone_number || "No disponible"}
-            </p>
-            <p>
-              <strong>Fecha de nacimiento: </strong>
-              {userData.birth_date || "No disponible"}
             </p>
           </div>
         </div>

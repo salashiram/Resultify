@@ -20,10 +20,13 @@ const Login = () => {
         password: loginData.logPassword,
       });
 
-      const response = await axios.post("http://localhost:3001/api/v1/login", {
-        email: loginData.logEmail,
-        password: loginData.logPassword,
-      });
+      const response = await axios.post(
+        "http://localhost:3001/api/v1/users/login",
+        {
+          email: loginData.logEmail,
+          password: loginData.logPassword,
+        }
+      );
 
       console.log(response.data);
       if (response.status == 200) {

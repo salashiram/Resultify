@@ -56,7 +56,7 @@ const Sidebar = () => {
               </a>
             </li>
             <hr />
-            {userData && userData.userRol === 1 && (
+            {userData && (userData.userRol === 1 || userData.userRol === 2) && (
               <>
                 <li className="admin">
                   <a onClick={dashboardRedirect} href="#">

@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 // routers
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
-app.use("/api/v1", usersRouter);
+app.use("/api/v1/users", usersRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

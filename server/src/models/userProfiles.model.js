@@ -1,7 +1,6 @@
 const { Sequelize, Model, DataTypes } = require("sequelize");
-const Users = require("../models/users.model");
-
 const sequelize = require("../connection");
+const Users = require("../models/users.model");
 
 class UserProfiles extends Model {}
 
@@ -9,16 +8,19 @@ UserProfiles.init(
   {
     id: {
       type: DataTypes.INTEGER,
+      autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
     user_id: {
+      // 💡 Cambiado de 'user_id' a 'userId'
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: "Users",
         key: "id",
       },
+      onDelete: "CASCADE",
     },
     first_name: {
       type: DataTypes.STRING,
@@ -26,10 +28,6 @@ UserProfiles.init(
     },
     last_name: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    birth_date: {
-      type: DataTypes.DATE,
       allowNull: false,
     },
     phone_number: {
@@ -44,12 +42,7 @@ UserProfiles.init(
   }
 );
 
-UserProfiles.hasOne(Users, {
-  foreignKey: "user_id",
-});
-
-Users.belongsTo(UserProfiles, {
-  foreignKey: "id",
-});
+Users.hasOne(UserProfiles, { foreignKey: "user_id" });
+UserProfiles.belongsTo(Users, { foreignKey: "user_id" });
 
 module.exports = UserProfiles;
