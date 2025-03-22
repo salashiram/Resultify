@@ -9,17 +9,12 @@ const Login = () => {
     logPassword: "",
   });
 
-  const navigate = useNavigate(); // Crear el hook de navegación
+  const navigate = useNavigate();
 
   const loginValidate = async (e) => {
     e.preventDefault();
 
     try {
-      console.log("Datos eviados", {
-        email: loginData.logEmail,
-        password: loginData.logPassword,
-      });
-
       const response = await axios.post(
         "http://localhost:3001/api/v1/users/login",
         {
@@ -28,15 +23,11 @@ const Login = () => {
         }
       );
 
-      console.log(response.data);
       if (response.status == 200) {
-        console.log("login successfully");
         localStorage.setItem("token", response.data.token);
-        console.log(response.data.token);
         navigate("/Home");
       }
     } catch (err) {
-      console.error("Error al iniciar sesión:", err.response || err);
       alert(err.response?.data?.message || "Las credenciales no son válidas");
     }
   };

@@ -30,9 +30,7 @@ const UserProfile = () => {
         if (result.ok) {
           setUserData(result.data[0]);
         }
-      } catch (error) {
-        console.error("Error al obtener los datos del usuario:", error);
-      }
+      } catch (error) {}
     };
 
     fetchUserData();

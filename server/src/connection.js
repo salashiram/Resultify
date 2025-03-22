@@ -1,10 +1,15 @@
 const { Sequelize } = require("sequelize");
 
-const sequelize = new Sequelize("Resultify", "root", "YHsy8B2QJQTrYg3A", {
-  host: "localhost",
-  dialect: "mysql",
-  port: "3306",
-});
+const sequelize = new Sequelize(
+  "Resultify",
+  "root",
+  process.env.DB_PASS_CONNECTION,
+  {
+    host: "localhost",
+    dialect: "mysql",
+    port: "3306",
+  }
+);
 
 async function testConnection() {
   try {

@@ -44,16 +44,6 @@ const NewUser = () => {
     e.preventDefault();
 
     try {
-      console.log("Datos enviados", {
-        email: formData.email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-        userRol: formData.userRol,
-        fisrtName: formData.firstName,
-        lastName: formData.lastName,
-        phoneNumber: formData.phoneNumber,
-      });
-
       if (!(formData.password == formData.confirmPassword)) {
         showAlert("Las contraseñas no coinciden.");
         document.getElementById("alertMessage").style.color = "red";
@@ -84,12 +74,10 @@ const NewUser = () => {
           document.getElementById("alertMessage").style.color = "red";
         } else {
           showAlert("Ocurrió un error al registrar el usuario.");
-          console.log(error);
           document.getElementById("alertMessage").style.color = "red";
         }
       } else {
         showAlert("Ocurrió un error al registrar el usuario.");
-        console.log(error);
         document.getElementById("alertMessage").style.color = "red";
       }
     }

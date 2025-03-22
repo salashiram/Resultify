@@ -135,7 +135,6 @@ router.post("/register", async (req, res) => {
       user_id: newUser.id,
     });
   } catch (err) {
-    // console.error(err);
     await transaction.rollback();
     res.status(500).json({
       message: "Error",

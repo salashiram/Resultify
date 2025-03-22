@@ -65,10 +65,6 @@ html,
   transition: background-color 0.3s ease;
 }
 
-.login-form button:hover {
-  /* background-color: #2e2e2e; */
-}
-
 .login-image-container {
   flex: 1;
   display: flex;
