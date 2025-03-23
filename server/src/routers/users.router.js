@@ -8,12 +8,27 @@ const { response } = require("express");
 const sequelize = require("../connection");
 
 router.get("/", async (req, res) => {
-  const users = await Users.findAll();
-  res.status(200).json({
-    ok: true,
-    status: 200,
-    body: users,
-  });
+  try {
+    const [result] = await sequelize.query("select * from vShowUsers;");
+
+    if (result.length === 0) {
+      res.status(409).json({
+        ok: false,
+        status: 409,
+        message: "empty",
+      });
+    }
+
+    res.json({
+      ok: true,
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      message: "Error fething user data",
+    });
+  }
 });
 
 // login
@@ -70,6 +85,42 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// search user
+router.get("/find/", authenticateToken, async (req, res) => {
+  const { id, email, student_id, phone_number } = req.query;
+
+  try {
+    const replacements = {
+      user_id: id || null,
+      email: email || null,
+      student_id: student_id || null,
+      phone_number: phone_number || null,
+    };
+
+    const [result] = await sequelize.query(
+      "call spSearchUser(:user_id,:email,:student_id,:phone_number);",
+      { replacements }
+    );
+
+    if (!result || result.length === 0) {
+      return res.status(404).json({
+        ok: false,
+        message: "No users found",
+      });
+    }
+
+    res.json({
+      ok: true,
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      message: "Error",
+    });
+  }
+});
+
 // user details
 router.get("/:id", authenticateToken, async (req, res) => {
   try {
@@ -101,8 +152,15 @@ router.get("/:id", authenticateToken, async (req, res) => {
 
 // user register
 router.post("/register", async (req, res) => {
-  const { email, password_hash, rol_id, first_name, last_name, phone_number } =
-    req.body;
+  const {
+    email,
+    password_hash,
+    rol_id,
+    student_id,
+    first_name,
+    last_name,
+    phone_number,
+  } = req.body;
 
   const transaction = await sequelize.transaction();
 
@@ -124,7 +182,7 @@ router.post("/register", async (req, res) => {
     );
 
     await UserProfiles.create(
-      { user_id: newUser.id, first_name, last_name, phone_number },
+      { user_id: newUser.id, student_id, first_name, last_name, phone_number },
       { transaction }
     );
 
@@ -139,6 +197,7 @@ router.post("/register", async (req, res) => {
     res.status(500).json({
       message: "Error",
       error: err.message,
+      stack: err.stack,
     });
   }
 });

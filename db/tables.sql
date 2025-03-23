@@ -18,6 +18,7 @@
 	id int primary key AUTO_INCREMENT,
 	name varchar(255) not null,
 	description varchar(255) not null,
+	is_active bool default(1),
 	createdAt timestamp default current_timestamp,
 	updatedAt datetime default current_timestamp on update current_timestamp  
 	);
@@ -26,6 +27,7 @@
 	create table UserProfiles(
 	id int primary key AUTO_INCREMENT,
 	user_id int not null,
+	student_id int unique not null, 
 	first_name varchar(255) not null,
 	last_name varchar(255) not null,
 	phone_number varchar(20),
@@ -42,6 +44,7 @@
 	school_group varchar(255) not null,
 	school_career varchar(255) not null,
 	created_by int not null,
+	is_active bool default(1),
 	createdAt timestamp default current_timestamp,
 	updatedAt datetime default current_timestamp on update current_timestamp  
 	);
@@ -71,6 +74,7 @@
 	id int primary key AUTO_INCREMENT,
 	name varchar(255) not null,
 	description varchar(255) not null,
+	is_active bool default(1),
 	createdAt timestamp default current_timestamp,
 	updatedAt datetime default current_timestamp on update current_timestamp  
 	);
@@ -79,8 +83,9 @@
 	create table QuestionType(
 	id int primary key AUTO_INCREMENT,
 	name varchar(255) not null,
-	description varchar(255) not null,
-	acreatedAt timestamp default current_timestamp,
+	description varchar(255) not null,	
+    is_active bool default(1),
+	createdAt timestamp default current_timestamp,
 	updatedAt datetime default current_timestamp on update current_timestamp  
 	);
 

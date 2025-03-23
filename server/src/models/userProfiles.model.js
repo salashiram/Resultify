@@ -13,7 +13,6 @@ UserProfiles.init(
       primaryKey: true,
     },
     user_id: {
-      // 💡 Cambiado de 'user_id' a 'userId'
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -21,6 +20,11 @@ UserProfiles.init(
         key: "id",
       },
       onDelete: "CASCADE",
+    },
+    student_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: true,
     },
     first_name: {
       type: DataTypes.STRING,

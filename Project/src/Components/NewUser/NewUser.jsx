@@ -6,6 +6,7 @@ import "./NewUser.css";
 const NewUser = () => {
   const [formData, setFormData] = useState({
     email: "",
+    student_id: "",
     firstName: "",
     lastName: "",
     phoneNumber: "",
@@ -19,15 +20,11 @@ const NewUser = () => {
   };
 
   const [alertMessage, setAlertMessage] = useState("");
-  const [alertStyle, setAlertStyle] = useState({});
-
-  const showAlert = (message) => {
-    setAlertMessage(message);
-  };
 
   const cleanFields = () => {
     setFormData({
       email: "",
+      student_id: "",
       firstName: "",
       lastName: "",
       phoneNumber: "",
@@ -35,7 +32,6 @@ const NewUser = () => {
       password: "",
       confirmPassword: "",
     });
-    showAlert("");
   };
 
   const formRef = useRef();
@@ -45,15 +41,17 @@ const NewUser = () => {
 
     try {
       if (!(formData.password == formData.confirmPassword)) {
-        showAlert("Las contraseñas no coinciden.");
-        document.getElementById("alertMessage").style.color = "red";
+        alert("Las contraseñas no coinciden.");
         return;
       }
+
+      console.log(formData);
 
       const response = await axios.post(
         "http://localhost:3001/api/v1/users/register",
         {
           email: formData.email,
+          student_id: formData.student_id,
           password_hash: formData.password,
           rol_id: formData.userRol,
           first_name: formData.firstName,
@@ -62,23 +60,22 @@ const NewUser = () => {
         }
       );
 
-      showAlert("Usuario creado exitosamente.");
-      document.getElementById("alertMessage").style.color = "green";
-      cleanFields();
+      if (response.status == 201) {
+        alert("Usuario creado exitosamente.");
+        cleanFields();
+      }
     } catch (error) {
       if (error.response && error.response.data.message) {
         const errorMessage = error.response.data.message;
 
         if (errorMessage === "Email already exists") {
-          showAlert("El correo electrónico ya está registrado.  ");
-          document.getElementById("alertMessage").style.color = "red";
+          alert("El correo electrónico ya está registrado.");
         } else {
-          showAlert("Ocurrió un error al registrar el usuario.");
-          document.getElementById("alertMessage").style.color = "red";
+          console.log(errorMessage);
+          alert("Ocurrió un error al registrar el usuario.");
         }
       } else {
-        showAlert("Ocurrió un error al registrar el usuario.");
-        document.getElementById("alertMessage").style.color = "red";
+        alert("Ocurrió un error al registrar el usuario.");
       }
     }
   };
@@ -119,6 +116,17 @@ const NewUser = () => {
               onChange={handleChange}
             />
           </div>
+
+          <div className="input-bx">
+            <label>Matricula</label>
+            <input
+              type="number"
+              name="student_id"
+              value={formData.student_id}
+              onChange={handleChange}
+            />
+          </div>
+
           <div className="input-bx">
             <label>
               Nombre(s) <span>*</span>
