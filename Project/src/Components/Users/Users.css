@@ -77,3 +77,33 @@
   background-color: #2e2e2e;
   transition: 0.2s ease-in-out;
 }
+
+.users-table {
+  width: 100%;
+  margin-top: 50px;
+}
+
+.users-table table {
+  border: 1px solid #000000;
+  height: 100%;
+  /* width: 100%; */
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 1px;
+  text-align: center;
+}
+
+.users-table th {
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 5px;
+}
+
+.users-table td {
+  width: auto;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 10px;
+}

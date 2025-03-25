@@ -3,6 +3,7 @@ import SideBar from "../SideBar/Sidebar";
 import "./NewExam.css";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { Link } from "react-router-dom";
 
 const NewExam = () => {
   const [examData, setExamData] = useState({
@@ -198,6 +199,9 @@ const NewExam = () => {
         <button onClick={handleClear} type="button">
           Limpiar
         </button>
+        <Link to="/Exams">
+          <button>Cancelar</button>
+        </Link>
       </div>
 
       <form ref={formRef} onSubmit={handleSubmit} action="">

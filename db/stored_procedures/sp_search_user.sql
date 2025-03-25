@@ -13,7 +13,7 @@
 				Users.id,
 				Users.email,
 				Users.is_active,
-				UserRol.id AS userRol,
+				UserRol.name as userRol,
                 UserProfiles.student_id,
 				UserProfiles.first_name,
 				UserProfiles.last_name,

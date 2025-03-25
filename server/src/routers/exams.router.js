@@ -8,13 +8,28 @@ const Options = require("../models/options.model");
 const { response, text } = require("express");
 const sequelize = require("../connection");
 
-router.get("/", async (req, res) => {
-  const exams = await Exams.findAll();
-  res.status(200).json({
-    ok: true,
-    status: 200,
-    body: exams,
-  });
+router.get("/", authenticateToken, async (req, res) => {
+  try {
+    const [result] = await sequelize.query("select * from vShowExams;");
+
+    if (result.length === 0) {
+      res.status(409).json({
+        ok: false,
+        status: 409,
+        message: "empty",
+      });
+    }
+
+    res.json({
+      ok: true,
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      message: "Error fetching exam data",
+    });
+  }
 });
 
 // new exam

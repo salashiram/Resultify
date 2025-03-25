@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import SideBar from "../SideBar/Sidebar";
 import axios from "axios";
 import "./NewUser.css";
+import { Link } from "react-router-dom";
 
 const NewUser = () => {
   const [formData, setFormData] = useState({
@@ -70,6 +71,8 @@ const NewUser = () => {
 
         if (errorMessage === "Email already exists") {
           alert("El correo electrónico ya está registrado.");
+        } else if (errorMessage === "Student id already exists") {
+          alert("La matricula ya está registrada");
         } else {
           console.log(errorMessage);
           alert("Ocurrió un error al registrar el usuario.");
@@ -91,8 +94,10 @@ const NewUser = () => {
         >
           Guardar
         </button>
-        <button>Cargar</button>
         <button onClick={cleanFields}>Limpiar</button>
+        <Link to="/Users">
+          <button>Cancelar</button>
+        </Link>
         <br />
         <p id="alertMessage">{alertMessage}</p>
       </div>

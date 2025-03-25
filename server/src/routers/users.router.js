@@ -7,7 +7,7 @@ const UserProfiles = require("../models/userProfiles.model");
 const { response } = require("express");
 const sequelize = require("../connection");
 
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     const [result] = await sequelize.query("select * from vShowUsers;");
 
@@ -174,6 +174,17 @@ router.post("/register", async (req, res) => {
       });
     }
 
+    const existingStudentId = await UserProfiles.findOne({
+      where: { student_id },
+    });
+
+    if (existingStudentId) {
+      return res.status(400).json({
+        ok: false,
+        message: "Student id already exists",
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password_hash, 10);
 
     const newUser = await Users.create(
@@ -183,6 +194,7 @@ router.post("/register", async (req, res) => {
 
     await UserProfiles.create(
       { user_id: newUser.id, student_id, first_name, last_name, phone_number },
+      {},
       { transaction }
     );
 
