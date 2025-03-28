@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import SideBar from "../SideBar/Sidebar";
 import { jwtDecode } from "jwt-decode";
 import "./UserProfile.css";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return;
-
+      if (!token) {
+        navigate("/");
+      }
       try {
         const decoded = jwtDecode(token);
         const userId = decoded.id;

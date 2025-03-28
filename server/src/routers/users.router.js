@@ -194,7 +194,6 @@ router.post("/register", async (req, res) => {
 
     await UserProfiles.create(
       { user_id: newUser.id, student_id, first_name, last_name, phone_number },
-      {},
       { transaction }
     );
 

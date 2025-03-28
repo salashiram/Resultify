@@ -7,6 +7,7 @@ import Users from "./Components/Users/Users";
 import NewUser from "./Components/NewUser/NewUser";
 import Exams from "./Components/Exams/Exams";
 import NewExam from "./Components/NewExam/NewExam";
+import UploadExam from "./Components/UploadExam/UploadExam";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/NewUser" element={<NewUser />} />
         <Route path="/Exams" element={<Exams />} />
         <Route path="/NewExam" element={<NewExam />} />
+        <Route path="/UploadExam" element={<UploadExam />} />
       </Routes>
     </Router>
   );

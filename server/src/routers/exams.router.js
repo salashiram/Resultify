@@ -13,14 +13,14 @@ router.get("/", authenticateToken, async (req, res) => {
     const [result] = await sequelize.query("select * from vShowExams;");
 
     if (result.length === 0) {
-      res.status(409).json({
+      return res.status(409).json({
         ok: false,
         status: 409,
         message: "empty",
       });
     }
 
-    res.json({
+    return res.json({
       ok: true,
       data: result,
     });
@@ -32,7 +32,6 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
-// new exam
 router.post("/create", authenticateToken, async (req, res) => {
   const {
     title,

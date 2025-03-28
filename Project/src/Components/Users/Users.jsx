@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import SideBar from "../SideBar/Sidebar";
-import "./Users.css";
 import { Link } from "react-router-dom";
+import useAuthCheck from "../../hooks/useAuthCheck";
+import "./Users.css";
 
 const Users = () => {
+  useAuthCheck([1, 2]);
   const [searchParam, setSearchParam] = useState("user_id");
   const [searchValue, setSearchValue] = useState("");
   const [userData, setUserData] = useState(null);
@@ -54,6 +56,7 @@ const Users = () => {
   }, []);
 
   const handleSearch = async () => {
+    return;
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -109,20 +112,6 @@ const Users = () => {
       </div>
       <div className="dashboard-container">
         <div className="search-content">
-          {/* <div className="search">
-            <select
-              value={searchParam}
-              onChange={(e) => setSearchParam(e.target.value)}
-              name=""
-              id=""
-            >
-              <option value="id">ID</option>
-              <option value="email">Correo electrónico</option>
-              <option value="student_id">Matrícula</option>
-              <option value="phone_number">Teléfono de contacto</option>
-            </select>
-          </div> */}
-
           <div className="content-bx">
             <input
               type="text"
@@ -136,60 +125,47 @@ const Users = () => {
           </div>
         </div>
 
-        <div className="users-table">
-          {userData && (
-            <table
-              border="1"
-              // cellPadding="10"
-              // cellSpacing="0"
-              // style={{ width: "100%" }}
-            >
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Email</th>
-                  <th>Estatus</th>
-                  <th>Rol</th>
-                  <th>Matrícula</th>
-                  <th>Nombre</th>
-                  <th>Apellido</th>
-                  <th>Teléfono</th>
-                </tr>
-              </thead>
-              <tbody>
-                {userData.length > 0 ? (
-                  userData.map((user) => (
-                    <tr key={user.id}>
-                      <td>
-                        <a href="#">{user.id}</a>
-                      </td>
-                      <td>{user.email}</td>
-                      <td>{user.userRol}</td>
-                      <td>{user.student_id}</td>
-                      <td>{user.first_name}</td>
-                      <td>{user.last_name}</td>
-                      <td>{user.phone_number || "N/A"}</td>
-                      <td>{user.is_active ? "Activo" : "Inactivo"}</td>
-                    </tr>
-                  ))
-                ) : (
+        <div className="table-content">
+          <div className="users-table">
+            {userData && (
+              <table>
+                <thead>
                   <tr>
-                    <td colSpan="8">No hay usuarios disponibles</td>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Matrícula</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Teléfono</th>
+                    <th>Rol</th>
+                    <th>Estatus</th>
                   </tr>
-                )}
-                {/* <tr>
-                <td>{userData.id}</td>
-                <td>{userData.email}</td>
-                <td>{userData.is_active ? "Activo" : "Inactivo"}</td>
-                <td>{userData.userRol}</td>
-                <td>{userData.student_id}</td>
-                <td>{userData.first_name}</td>
-                <td>{userData.last_name}</td>
-                <td>{userData.phone_number || "N/A"}</td>
-              </tr> */}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody>
+                  {userData.length > 0 ? (
+                    userData.map((user) => (
+                      <tr key={user.id}>
+                        <td>
+                          <a href="#">{user.id}</a>
+                        </td>
+                        <td>{user.email}</td>
+                        <td>{user.student_id}</td>
+                        <td>{user.first_name}</td>
+                        <td>{user.last_name}</td>
+                        <td>{user.phone_number || "N/A"}</td>
+                        <td>{user.userRol}</td>
+                        <td>{user.is_active ? "Activo" : "Inactivo"}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="8">No hay usuarios disponibles</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
     </div>

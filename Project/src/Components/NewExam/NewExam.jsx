@@ -1,11 +1,15 @@
 import React, { useRef } from "react";
 import SideBar from "../SideBar/Sidebar";
-import "./NewExam.css";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import useAuthCheck from "../../hooks/useAuthCheck";
+import "./NewExam.css";
 
 const NewExam = () => {
+  const navigate = useNavigate();
+  useAuthCheck([1, 2]);
   const [examData, setExamData] = useState({
     title: "",
     description: "",
@@ -161,6 +165,7 @@ const NewExam = () => {
         if (response.status === 201) {
           alert("Examen creado con éxito");
           handleClear();
+          navigate("/Exams");
         } else {
           alert(`Error al crear el examen: ${data.message}`);
         }
@@ -168,7 +173,6 @@ const NewExam = () => {
         console.error("Error:", error);
         alert("Error al enviar los datos");
       }
-    } else {
     }
   };
 

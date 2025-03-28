@@ -39,6 +39,11 @@ const Sidebar = () => {
   const homeRedirect = () => navigate("/Home");
   const dashboardRedirect = () => navigate("/Dashboard");
   const toggleSidebar = () => setIsOpen(!isOpen);
+  const logOut = () => {
+    // llamar api para destruir token
+    localStorage.removeItem("token");
+    navigate("/");
+  };
   return (
     <>
       <div
@@ -51,9 +56,7 @@ const Sidebar = () => {
         <nav className="sidebar-content">
           <ul>
             <li>
-              <a onClick={homeRedirect} href="#">
-                Inicio
-              </a>
+              <a href="/Home">Inicio</a>
             </li>
             <hr />
             {userData && (userData.userRol === 1 || userData.userRol === 2) && (
@@ -80,10 +83,10 @@ const Sidebar = () => {
           <div className="profile-info">
             {userData ? (
               <>
-                <p>
+                <p onClick={userProfile}>
                   {userData.first_name} {userData.last_name}
                 </p>
-                <small onClick={userProfile}>Ver perfil</small>
+                <small onClick={logOut}>Cerrar sesión</small>
               </>
             ) : (
               <p>Cargando...</p>

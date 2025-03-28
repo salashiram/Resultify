@@ -1,10 +1,14 @@
 import React, { useState, useRef } from "react";
 import SideBar from "../SideBar/Sidebar";
 import axios from "axios";
-import "./NewUser.css";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import useAuthCheck from "../../hooks/useAuthCheck";
+import "./NewUser.css";
 
 const NewUser = () => {
+  const navigate = useNavigate();
+  useAuthCheck([1, 2]);
   const [formData, setFormData] = useState({
     email: "",
     student_id: "",
@@ -63,7 +67,7 @@ const NewUser = () => {
 
       if (response.status == 201) {
         alert("Usuario creado exitosamente.");
-        cleanFields();
+        navigate("/Users");
       }
     } catch (error) {
       if (error.response && error.response.data.message) {

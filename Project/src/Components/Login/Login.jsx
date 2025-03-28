@@ -25,7 +25,7 @@ const Login = () => {
 
       if (response.status == 200) {
         localStorage.setItem("token", response.data.token);
-        navigate("/Home");
+        navigate("/UserProfile");
       }
     } catch (err) {
       alert(err.response?.data?.message || "Las credenciales no son válidas");
