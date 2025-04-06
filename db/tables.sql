@@ -88,7 +88,23 @@
 	createdAt timestamp default current_timestamp,
 	updatedAt datetime default current_timestamp on update current_timestamp  
 	);
+    
+    /*drop table if exists Submissions;
+    create table Submissions(
+    id int primary key AUTO_INCREMENT,
+    exam_id int not null,
+    student_id,
+    is_active bool default(1)
+    );*/
 
+	drop table if exists Answers;
+    create table Answers(
+    id int primary key AUTO_INCREMENT,
+    submission_id int not null,
+    question_id int not null,
+    is_correct bool default(1),
+    is_active bool default(1)
+    );
 
 	/* CONSTRAINTS */
 

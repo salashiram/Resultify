@@ -48,14 +48,7 @@ const UserProfile = () => {
       <SideBar />
       <div className="profile-container">
         <div className="banner">
-          <img
-            src="https://via.placeholder.com/800x200"
-            alt="Banner"
-            className="banner-img"
-          />
-          <div className="profile-picture">
-            <img src="https://via.placeholder.com/150" alt="Perfil" />
-          </div>
+          <div className="profile-picture"></div>
         </div>
 
         <div className="user-info">
@@ -63,6 +56,10 @@ const UserProfile = () => {
           <p className="username">@{userData.email}</p>
 
           <div className="details">
+            <p>
+              <strong>Matricula:</strong>{" "}
+              {userData.student_id || "No disponible"}
+            </p>
             <p>
               <strong>Teléfono de contacto:</strong>{" "}
               {userData.phone_number || "No disponible"}

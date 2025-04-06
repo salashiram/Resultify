@@ -1,0 +1,66 @@
+{
+    "texto_detectado": "26 de febrero de 2025\nter Examen Parcial - Programacién basica\nMatricula: 1908941 Nombre completo: Maria Agustina Salas Gonzalez Calificacién:\nIl. Instrucciones: Completa la linea con el comando en CMD correspondiente. 15pts - 1pts cada pregunta.\n1. true: Python fue creado por Guido van Rossum a principios de los afios 80.\n2. true: Python es un lenguaje de programacién compilado.\n3. true: En Python, es necesario declarar el tipo de dato de una variable explicitamente.\n4. true: Los lenguajes de marcado, se utilizan para estructurar informacién en un documento (sin ejecutar procesos).\n5. false: La funcién input() en Python se utiliza para mostrar informacion en la pantalla.\n6. false: Las secuencias de escape como \\n no tienen ningun efecto en la funcidn print().\n7. true: La funcidn type() se utiliza para determinar el tipo de dato de una variable.\n8. false: El operador // en Python realiza una divisi6n que siempre devuelve un valor flotante.\n9. true: El operador % devuelve el resto de una division.\n10. true: Los operadores de comparacién, como ==, devuelven True o False.\n11. true: La estructura condicional elif se ejecuta si la condicién anterior es verdadera.\n12. true: El ciclo for se utiliza principalmente para recorrer una secuencia.\n13. false__: La palabra clave break detiene el ciclo actual y continua con la siguiente iteracién.\n14. false__: Python no distingue entre mayusculas y minusculas en los nombres de las variables.\n15. true: La indentacén es fundamental en Python para definir bloques de cdédigo.",
+    "nombre_imagen": "/Users/hiramsalas/Documents/Resultify/server/processing/output_images/1743942504025/page_1.png",
+    "preguntas_detectadas": [
+        {
+            "question_number": 1,
+            "answer": "true"
+        },
+        {
+            "question_number": 2,
+            "answer": "true"
+        },
+        {
+            "question_number": 3,
+            "answer": "true"
+        },
+        {
+            "question_number": 4,
+            "answer": "true"
+        },
+        {
+            "question_number": 5,
+            "answer": "false"
+        },
+        {
+            "question_number": 6,
+            "answer": "false"
+        },
+        {
+            "question_number": 7,
+            "answer": "true"
+        },
+        {
+            "question_number": 8,
+            "answer": "false"
+        },
+        {
+            "question_number": 9,
+            "answer": "true"
+        },
+        {
+            "question_number": 10,
+            "answer": "true"
+        },
+        {
+            "question_number": 11,
+            "answer": "true"
+        },
+        {
+            "question_number": 12,
+            "answer": "true"
+        },
+        {
+            "question_number": 13,
+            "answer": "false"
+        },
+        {
+            "question_number": 14,
+            "answer": "false"
+        },
+        {
+            "question_number": 15,
+            "answer": "true"
+        }
+    ]
+}

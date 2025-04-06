@@ -2,32 +2,32 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import SideBar from "../SideBar/Sidebar";
-import { User, Upload, FileText } from "lucide-react";
+import { User, Upload, FileText, Download, Check } from "lucide-react";
 import useAuthCheck from "../../hooks/useAuthCheck";
-import "./Dashboard.css";
+import "./MenuExam.css";
 
 const options = [
   {
     id: 1,
-    label: "Usuarios",
-    description: "Gestionar los usuarios del sistema",
-    icon: User,
-    path: "/Users",
+    label: "Crear examen",
+    description: "Crear o modificar exámenes",
+    icon: FileText,
+    path: "/Exams",
   },
   {
     id: 2,
-    label: "Exámenes",
-    description: "Ver y administrar exámenes",
-    icon: FileText,
-    path: "/MenuExam",
+    label: "Cargar Examenes",
+    description: "Cargar exámenes para revisión",
+    icon: Upload,
+    path: "/UploadExam",
   },
-  // {
-  //   id: 3,
-  //   label: "Cargar Examen",
-  //   description: "Subir un nuevo examen",
-  //   icon: Upload,
-  //   path: "/UploadExam",
-  // },
+  {
+    id: 3,
+    label: "Revisar Examenes",
+    description: "Revisar exámenes",
+    icon: Check,
+    path: "/ExamCheck",
+  },
 ];
 
 const OptionItem = ({ label, description, icon: Icon, path }) => (
@@ -40,7 +40,7 @@ const OptionItem = ({ label, description, icon: Icon, path }) => (
   </Link>
 );
 
-const Dashboard = () => {
+const MenuExam = () => {
   useAuthCheck([1, 2]);
   return (
     <div>
@@ -56,4 +56,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default MenuExam;

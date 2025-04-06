@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.exams-list-container {
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+}
+.exams-list-content {
+  margin: 0 auto;
+}
+
+.exams-list-content p {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.exams-list-content ul {
+  margin-top: 50px;
+  list-style: none;
+}
+
+.exams-list-content li {
+  align-items: center;
+  text-align: center;
+  margin-bottom: 20px;
+}

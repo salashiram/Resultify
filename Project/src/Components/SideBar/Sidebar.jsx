@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import "./Sidebar.css";
@@ -7,6 +7,22 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
+
+  const sideBarRef = useRef(null);
+
+  const handleClickOutside = (event) => {
+    if (sideBarRef.current && !sideBarRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem("token");
@@ -52,13 +68,9 @@ const Sidebar = () => {
       >
         ☰
       </div>
-      <div className={`sidebar ${isOpen ? "open" : ""}`}>
+      <div className={`sidebar ${isOpen ? "open" : ""}`} ref={sideBarRef}>
         <nav className="sidebar-content">
           <ul>
-            <li>
-              <a href="/Home">Inicio</a>
-            </li>
-            <hr />
             {userData && (userData.userRol === 1 || userData.userRol === 2) && (
               <>
                 <li className="admin">
@@ -75,11 +87,7 @@ const Sidebar = () => {
           </ul>
         </nav>
         <div className="profile-section">
-          <img
-            src="https://via.placeholder.com/50"
-            alt="Avatar"
-            className="profile-pic"
-          />
+          <img className="profile-pic" />
           <div className="profile-info">
             {userData ? (
               <>

@@ -1,23 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import SideBar from "../SideBar/Sidebar";
+import { useNavigate } from "react-router-dom";
 import "./UploadExam.css";
 
 const UploadExam = () => {
-  const [file, setFile] = useState(null);
+  const navigate = useNavigate();
+  const [files, setFiles] = useState([]);
+  const [exams, setExams] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  //
+  const [results, setResults] = useState(null);
+
+  const handleReviewClick = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        "http://localhost:3001/api/v1/exams/process-all",
+        {
+          method: "POST",
+        }
+      );
+
+      const data = await response.json();
+      setResults(data.results);
+    } catch (err) {
+      alert("Error al procesar los examenes");
+      console.error("Error al procesar los exámenes:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchExams = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3001/api/v1/uploads/get-uploaded-exams"
+      );
+      setExams(response.data);
+    } catch (err) {
+      console.error("Error al obtener los exámenes:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchExams();
+  }, []);
+
+  if (loading) {
+    return <div>Cargando exámenes...</div>;
+  }
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    setFiles(Array.from(e.target.files)); // 🔥 Ahora guardamos todos los archivos
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      alert("Selecciona un archivo PDF primero");
+    if (files.length === 0) {
+      alert("Selecciona al menos un archivo");
       return;
     }
 
     const formData = new FormData();
-    formData.append("file", file);
+    files.forEach((file) => {
+      formData.append("files", file); // 🔥 OJO, debe coincidir con el nombre en el backend
+    });
+
+    setLoading(true);
 
     try {
       const response = await axios.post(
@@ -28,10 +80,13 @@ const UploadExam = () => {
         }
       );
       alert("Archivo subido con éxito!");
+      navigate("/ExamCheck");
       console.log(response.data);
     } catch (error) {
       console.error("Error al subir archivo", error);
       alert("Error al subir archivo");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,16 +115,17 @@ const UploadExam = () => {
             </svg>
           </div>
           <div class="text">
-            <span>Subir archivo</span>
+            <span>Selecciona los archivos</span>
           </div>
           <input
             id="file"
             type="file"
-            accept=".pdf"
+            accept="application/pdf"
+            multiple
             onChange={handleFileChange}
           ></input>
         </label>
-        <button onClick={handleUpload}>Subir PDF</button>
+        <button onClick={handleUpload}>Subir</button>
       </div>
     </div>
   );

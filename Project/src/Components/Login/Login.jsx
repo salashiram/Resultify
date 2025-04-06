@@ -63,15 +63,10 @@ const Login = () => {
             required
           />
 
-          <button type="submit">Ingresar</button>
+          <button type="submit">Iniciar sesión</button>
         </form>
       </div>
-      <div className="login-image-container">
-        <img
-          src="https://source.unsplash.com/600x800/?education,technology"
-          alt="Ilustración de inicio de sesión"
-        />
-      </div>
+      <div className="login-image-container"></div>
     </div>
   );
 };

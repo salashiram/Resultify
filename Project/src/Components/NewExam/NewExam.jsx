@@ -23,7 +23,7 @@ const NewExam = () => {
   const addQuestion = () => {
     const newQuestions = [
       ...questions,
-      { id: Date.now(), text: "", answers: [], maxAnswers: 4 },
+      { id: Date.now(), text: "", answers: [], maxAnswers: 1 },
     ];
 
     setQuestions(newQuestions);
@@ -213,7 +213,7 @@ const NewExam = () => {
           <div className="left-content">
             <div className="input-bx">
               <label>
-                Nombres <span>*</span>
+                Nombre <span>*</span>
               </label>
               <input
                 required
@@ -324,13 +324,16 @@ const NewExam = () => {
                         )
                       }
                     />
-                    <input
-                      type="checkbox"
-                      checked={answer.isCorrect}
-                      onChange={() =>
-                        toggleCorrectAnswer(question.id, answer.id)
-                      }
-                    />
+                    <div className="chbx">
+                      <label htmlFor="">Marcar correcta</label>
+                      <input
+                        type="checkbox"
+                        checked={answer.isCorrect}
+                        onChange={() =>
+                          toggleCorrectAnswer(question.id, answer.id)
+                        }
+                      />
+                    </div>
                   </div>
                 ))}
               </div>

@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const app = express();
+const path = require("path");
+const fs = require("fs");
 const usersRouter = require("../routers/users.router");
 const examsRouter = require("../routers/exams.router");
 const uploadsRouter = require("../routers/uploads.router");
@@ -25,6 +27,13 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/exams", examsRouter);
 app.use("/api/v1/uploads", uploadsRouter);
+// app.use("/api/v1/uploads/", uploadsRouter);
+
+// Ruta para servir archivos estáticos (las imágenes)
+// app.use(
+//   "/uploads/exam_images",
+//   express.static(path.join(__dirname, "uploads/exam_images"))
+// );
 
 // const uploadRoutes = require("../routers/uploads.router");
 // app.use(uploadRoutes);
