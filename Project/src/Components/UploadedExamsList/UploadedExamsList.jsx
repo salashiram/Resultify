@@ -10,9 +10,9 @@ const UploadedExamsList = ({ exams, loading }) => {
     <div>
       <div className="exams-list-container">
         <div className="exams-list-content">
-          <h2>Exámenes procesados</h2>
+          <h2>Exámenes cargados</h2>
           {exams.length === 0 ? (
-            <p>No hay exámenes procesados.</p>
+            <p>No hay exámenes cargados.</p>
           ) : (
             <ul>
               {exams.map((exam, index) => (

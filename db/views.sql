@@ -27,10 +27,19 @@
                 UserProfiles.id as user_info_id,
                 concat(UserProfiles.first_name , ' ' , UserProfiles.last_name) as autor,
                 Exams.is_active
-			From Exams
+			from Exams
 			left join Users on Exams.created_by = Users.id
-            left join UserProfiles on UserProfiles.user_id = Users.id
-            where Exams.is_active = 1;
+            left join UserProfiles on UserProfiles.user_id = Users.id;
+            
+	drop view if exists vShowActiveExams;
+	create view vShowActiveExams as
+			select 
+				Exams.id,
+                Exams.title
+                from exams
+                where Exams.is_active = 1;
+				
+                
 	
  
  

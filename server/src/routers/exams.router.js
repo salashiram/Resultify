@@ -29,7 +29,32 @@ router.get("/", authenticateToken, async (req, res) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
+      ok: false,
+      message: "Error fetching exam data",
+    });
+  }
+});
+
+router.get("/active-exams", async (req, res) => {
+  try {
+    const [result] = await sequelize.query("select * from vShowActiveExams");
+
+    if (result.length === 0) {
+      return res.status(409).json({
+        ok: false,
+        status: 409,
+        message: "empty",
+      });
+    }
+
+    return res.json({
+      ok: true,
+      data: result,
+    });
+  } catch (err) {
+    console.log("Error: ", err);
+    return res.status(500).json({
       ok: false,
       message: "Error fetching exam data",
     });
@@ -200,58 +225,66 @@ router.post("/create", authenticateToken, async (req, res) => {
 //   }
 // });
 
-router.post("/grade-exam", async (req, res) => {
+router.post("/grade-exams", async (req, res) => {
   try {
     const { exam_id } = req.body;
 
-    // Ruta donde están los JSON procesados
-    const processingFolder = path.join(__dirname, "../../processing/");
+    // Carpeta donde están los JSONs detectados
+    const detectedExamsFolder = path.join(__dirname, "../detected_exams/");
 
-    if (!fs.existsSync(processingFolder)) {
+    if (!fs.existsSync(detectedExamsFolder)) {
       return res
         .status(400)
-        .json({ error: "No se encontró la carpeta correspondiente" });
+        .json({ error: "No se encontró la carpeta de exámenes detectados." });
     }
 
     // Leer todos los archivos JSON
     const files = fs
-      .readdirSync(processingFolder)
+      .readdirSync(detectedExamsFolder)
       .filter((file) => file.endsWith(".json"));
 
     if (files.length === 0) {
       return res
         .status(400)
-        .json({ error: "No hay archivos JSON para procesar" });
+        .json({ error: "No hay archivos JSON para procesar." });
     }
 
-    // Consultar las preguntas del examen
+    // Traer las preguntas correctas del examen en el orden correcto
     const questions = await sequelize.query(
-      `SELECT q.id AS question_id, q.question_text, o.option_text, o.is_correct
-         FROM Questions q
-         JOIN Options o ON q.id = o.question_id
-         WHERE q.exam_id = ?`,
+      `
+      SELECT q.id AS question_id, q.question_text, o.option_text, o.is_correct
+      FROM Questions q
+      JOIN Options o ON q.id = o.question_id
+      WHERE q.exam_id = ?
+      ORDER BY q.id ASC
+      `,
       { replacements: [exam_id], type: QueryTypes.SELECT }
     );
 
     if (questions.length === 0) {
       return res
         .status(404)
-        .json({ error: "No se encontraron preguntas para este examen" });
+        .json({ error: "No se encontraron preguntas para este examen." });
     }
 
-    // Mapeo para facilitar comparación
-    const correctAnswersMap = {};
+    // Crear lista ordenada de respuestas correctas
+    const correctAnswersList = [];
+    const questionIdList = [];
     for (const q of questions) {
       if (q.is_correct) {
-        correctAnswersMap[q.question_id] = q.option_text.trim().toLowerCase();
+        correctAnswersList.push(q.option_text.trim().toLowerCase());
+        questionIdList.push(q.question_id);
       }
     }
 
     const results = [];
 
+    // Procesar cada archivo JSON detectado
     for (const file of files) {
-      const filePath = path.join(processingFolder, file);
+      const filePath = path.join(detectedExamsFolder, file);
       const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+
+      console.log("DATA:", data);
 
       const detectedAnswers = data.preguntas_detectadas || [];
 
@@ -259,42 +292,44 @@ router.post("/grade-exam", async (req, res) => {
       let correctCount = 0;
       let details = [];
 
-      for (const detected of detectedAnswers) {
+      for (let i = 0; i < detectedAnswers.length; i++) {
+        const detected = detectedAnswers[i];
         const questionNumber = detected.question_number;
         const userAnswer = detected.answer.trim().toLowerCase();
 
-        // Buscar la opción correcta correspondiente
-        const question = questions.find((q) =>
-          q.question_text.includes(`${questionNumber}.`)
-        );
+        const correctAnswer = correctAnswersList[i]; // Usamos el índice
+        const isCorrect = userAnswer === correctAnswer;
 
-        if (question) {
-          const correctAnswer = correctAnswersMap[question.question_id];
-          const isCorrect = userAnswer === correctAnswer;
+        if (isCorrect) correctCount++;
 
-          if (isCorrect) correctCount++;
-
-          details.push({
-            question_number: questionNumber,
-            user_answer: userAnswer,
-            correct_answer: correctAnswer,
-            is_correct: isCorrect,
-          });
-        } else {
-          details.push({
-            question_number: questionNumber,
-            user_answer: userAnswer,
-            correct_answer: null,
-            is_correct: false,
-          });
-        }
+        details.push({
+          question_number: questionNumber,
+          user_answer: userAnswer,
+          correct_answer: correctAnswer,
+          is_correct: isCorrect,
+        });
       }
 
       const grade =
         totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
 
+      // results.push({
+      //   image_name: data.nombre_imagen || file,
+      //   total_questions: totalQuestions,
+      //   correct_answers: correctCount,
+      //   grade: grade.toFixed(2),
+      //   details,
+      // });
       results.push({
         image_name: data.nombre_imagen || file,
+        matricula:
+          data.matricula && data.matricula.trim() !== ""
+            ? data.matricula
+            : "No detectada",
+        nombre_completo:
+          data.nombre_completo && data.nombre_completo.trim() !== ""
+            ? data.nombre_completo
+            : "No detectado",
         total_questions: totalQuestions,
         correct_answers: correctCount,
         grade: grade.toFixed(2),
@@ -308,8 +343,8 @@ router.post("/grade-exam", async (req, res) => {
       results,
     });
   } catch (error) {
-    console.error("❌ Error al procesar el examen:", error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+    console.error(error);
+    return res.status(500).json({ error: "Error al procesar los exámenes." });
   }
 });
 
@@ -373,9 +408,14 @@ router.post("/process-all", (req, res) => {
             exec(
               `python3 ../processing/text.py "${imagePath}"`,
               (error, stdout, stderr) => {
-                if (error || stderr) {
-                  console.error(`Error al procesar ${image}:`, error || stderr);
+                if (error) {
+                  console.error(`Error real al procesar ${image}:`, error);
                   return;
+                }
+
+                if (stderr) {
+                  console.warn(`Advertencia al procesar ${image}:`, stderr);
+                  // No hacemos return, solo mostramos el warning
                 }
 
                 console.log(`Texto procesado para ${image}:`, stdout);

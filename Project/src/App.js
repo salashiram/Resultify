@@ -10,6 +10,7 @@ import Exams from "./Components/Exams/Exams";
 import NewExam from "./Components/NewExam/NewExam";
 import UploadExam from "./Components/UploadExam/UploadExam";
 import ExamCheck from "./Components/ExamCheck/ExamCheck";
+import ExamResults from "./Components/ExamResults/ExamResults";
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
         <Route path="/NewExam" element={<NewExam />} />
         <Route path="/UploadExam" element={<UploadExam />} />
         <Route path="/ExamCheck" element={<ExamCheck />} />
+        <Route path="/ExamResults" element={<ExamResults />} />
       </Routes>
     </Router>
   );

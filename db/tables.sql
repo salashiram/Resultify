@@ -89,13 +89,19 @@
 	updatedAt datetime default current_timestamp on update current_timestamp  
 	);
     
-    /*drop table if exists Submissions;
+
+	drop table if exists Submissions;
     create table Submissions(
     id int primary key AUTO_INCREMENT,
     exam_id int not null,
-    student_id,
-    is_active bool default(1)
-    );*/
+    student_id int not null,
+    student_name varchar(255) not null,
+    is_active bool default 1,
+    score decimal(10,2) not null,
+	createdAt timestamp default current_timestamp,
+	updatedAt datetime default current_timestamp on update current_timestamp 
+    );
+    
 
 	drop table if exists Answers;
     create table Answers(
@@ -130,8 +136,15 @@
 
 	alter table Options
 		add constraint fk_question_option foreign key (question_id) references Questions(id);
+        
+	alter table Submissions
+		add constraint fk_submission_exam foreign key (exam_id) references Exams(id);
+        
+	alter table Answers
+		add constraint fk_answers_submissions foreign key (submission_id) references Submissions(id);
 		
-
+	alter table Answers 
+		add constraint fk_answers_questions foreign key (question_id) references Questions(id);
 
 
 

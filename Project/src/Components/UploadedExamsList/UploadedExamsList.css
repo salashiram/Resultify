@@ -11,6 +11,7 @@
 }
 .exams-list-content {
   margin: 0 auto;
+  text-align: center;
 }
 
 .exams-list-content p {
@@ -19,7 +20,9 @@
 }
 
 .exams-list-content ul {
+  width: 300px;
   margin-top: 50px;
+  margin-bottom: 50px;
   list-style: none;
 }
 
@@ -27,4 +30,6 @@
   align-items: center;
   text-align: center;
   margin-bottom: 20px;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
 }

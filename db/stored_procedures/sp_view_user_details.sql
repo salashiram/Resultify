@@ -12,6 +12,7 @@
 				UserRol.id AS userRol,
 				UserProfiles.first_name,
 				UserProfiles.last_name,
+                UserProfiles.student_id,
 				UserProfiles.phone_number
 			from Users
 			left join UserRol ON Users.rol_id = UserRol.id
@@ -19,6 +20,7 @@
 			where Users.id = p_user_id;
 		end //
 	delimiter ;
+    
     
  
     
