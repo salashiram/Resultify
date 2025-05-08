@@ -4,12 +4,16 @@ import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
-import "./NewExam.css";
 
-const NewExam = () => {
+import "./EditExam.css";
+
+const EditExam = () => {
   const navigate = useNavigate();
   useAuthCheck([1, 2]);
+  // const { examId } = useParams();
+  // const { examId } = useParams();
   const [examData, setExamData] = useState({
     title: "",
     description: "",
@@ -19,7 +23,65 @@ const NewExam = () => {
     questions: [],
   });
 
+  useEffect(() => {
+    const fetchExamData = async () => {
+      const token = localStorage.getItem("token");
+      const exam_Id = localStorage.getItem("examId");
+
+      console.log(exam_Id);
+      if (token) {
+        try {
+          const response = await fetch(
+            `http://localhost:3001/api/v1/exams/details/${exam_Id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          const data = await response.json();
+
+          console.log(data);
+
+          // Mapear datos al formato esperado por el formulario
+          const mappedQuestions = data.questions.map((q) => ({
+            id: Date.now() + Math.random(),
+            text: q.question_text,
+            number: q.question_number,
+            score: q.score_value,
+            maxAnswers: 1,
+            answers: data.options
+              .filter((a) => a.question_id === q.question_id)
+              .map((a) => ({
+                id: Date.now() + Math.random(),
+                text: a.option_text,
+                isCorrect: a.is_correct,
+              })),
+          }));
+
+          setExamData({
+            title: data.exam.title,
+            description: data.exam.description,
+            exam_type_id: data.exam.exam_type_id,
+            school_group: data.exam.school_group,
+            school_career: data.exam.school_career,
+            questions: mappedQuestions,
+          });
+
+          setQuestions(mappedQuestions);
+        } catch (err) {
+          console.error("Error al cargar el examen:", err);
+        }
+      } else {
+        // error
+      }
+    };
+    fetchExamData();
+  }, []);
+
   const [questions, setQuestions] = useState([]);
+
   const addQuestion = () => {
     const newQuestions = [
       ...questions,
@@ -38,16 +100,6 @@ const NewExam = () => {
     setExamData((prevData) => ({
       ...prevData,
       questions: newQuestions,
-    }));
-  };
-
-  const removeQuestion = (questionId) => {
-    setQuestions((prevQuestions) =>
-      prevQuestions.filter((q) => q.id !== questionId)
-    );
-    setExamData((prevData) => ({
-      ...prevData,
-      questions: prevData.questions.filter((q) => q.id !== questionId),
     }));
   };
 
@@ -218,9 +270,10 @@ const NewExam = () => {
         >
           Guardar
         </button>
-        <button onClick={handleClear} type="button">
+        {/* <button onClick={handleClear} type="button">
           Limpiar
-        </button>
+        </button> */}
+        <button>Desactivar</button>
       </div>
       <form ref={formRef} onSubmit={handleSubmit} action="">
         <div className="exam-container">
@@ -339,23 +392,13 @@ const NewExam = () => {
                     handleQuestionChange(question.id, "text", e.target.value)
                   }
                 />
-                <div className="action-buttons">
-                  <button
-                    onClick={() => removeQuestion(question.id)}
-                    type="button"
-                    className="delete-question"
-                  >
-                    - Eliminar pregunta
-                  </button>
-                  <button
-                    type="button"
-                    className="add-answer-btn"
-                    onClick={() => addAnswer(question.id)}
-                  >
-                    + Agregar respuesta
-                  </button>
-                </div>
-
+                <button
+                  type="button"
+                  className="add-answer-btn"
+                  onClick={() => addAnswer(question.id)}
+                >
+                  + Agregar respuesta
+                </button>
                 {question.answers.map((answer) => (
                   <div key={answer.id} className="answer-box">
                     <input
@@ -392,4 +435,4 @@ const NewExam = () => {
   );
 };
 
-export default NewExam;
+export default EditExam;

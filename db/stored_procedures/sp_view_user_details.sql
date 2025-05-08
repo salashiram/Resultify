@@ -7,9 +7,11 @@
 	)
 		begin
 			select
+				Users.id as id,
 				Users.email,
 				Users.is_active,
-				UserRol.id AS userRol,
+				UserRol.id as userRol,
+                UserRol.name as user_rol,
 				UserProfiles.first_name,
 				UserProfiles.last_name,
                 UserProfiles.student_id,
@@ -20,6 +22,9 @@
 			where Users.id = p_user_id;
 		end //
 	delimiter ;
+    
+    
+ 
     
     
  

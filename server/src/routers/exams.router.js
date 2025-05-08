@@ -1,17 +1,38 @@
 const router = require("express").Router();
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const authenticateToken = require("../middleware/authMiddleware.middleware");
 const Exams = require("../models/exams.model");
 const Questions = require("../models/questions.model");
 const Options = require("../models/options.model");
-const { response, text } = require("express");
 const sequelize = require("../connection");
+const mysql = require("mysql2/promise");
+const pool = require("../mysql"); // importa tu conexión con mysql2
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 const { json, QueryTypes } = require("sequelize");
 
+// functions
+const deleteFilesRecursively = (folderPath) => {
+  if (fs.existsSync(folderPath)) {
+    const entries = fs.readdirSync(folderPath);
+    entries.forEach((entry) => {
+      const entryPath = path.join(folderPath, entry);
+      const stats = fs.lstatSync(entryPath);
+
+      if (stats.isDirectory()) {
+        // Si es una carpeta, llamar recursivamente
+        deleteFilesRecursively(entryPath);
+        fs.rmdirSync(entryPath); // después de vaciarla, eliminar carpeta
+      } else {
+        // Si es un archivo, eliminarlo
+        fs.unlinkSync(entryPath);
+      }
+    });
+  }
+};
+
+// Consultar todos los examenes
 router.get("/", authenticateToken, async (req, res) => {
   try {
     const [result] = await sequelize.query("select * from vShowExams;");
@@ -36,6 +57,7 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
+// Consultar examenes activos
 router.get("/active-exams", async (req, res) => {
   try {
     const [result] = await sequelize.query("select * from vShowActiveExams");
@@ -61,6 +83,38 @@ router.get("/active-exams", async (req, res) => {
   }
 });
 
+// Consultar examen y detalles
+
+router.get("/details/:examId", authenticateToken, async (req, res) => {
+  const examId = parseInt(req.params.examId, 10);
+
+  if (isNaN(examId)) {
+    return res.status(400).json({ message: "Invalid exam ID" });
+  }
+
+  try {
+    const connection = await pool.getConnection();
+
+    const [results] = await connection.query("CALL get_exam_by_id(?);", [
+      examId,
+    ]);
+
+    connection.release();
+
+    const [examInfo, questions, options] = results;
+
+    return res.status(200).json({
+      exam: examInfo?.[0] || null,
+      questions: questions || [],
+      options: options || [],
+    });
+  } catch (err) {
+    console.error("Error fetching exam:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Crear examen
 router.post("/create", authenticateToken, async (req, res) => {
   const {
     title,
@@ -88,18 +142,20 @@ router.post("/create", authenticateToken, async (req, res) => {
       { transaction }
     );
 
-    // 2.- insertar preguntas
+    // 2.- Insertar preguntas
     for (const q of questions) {
       const newQuestion = await Questions.create(
         {
           exam_id: newExam.id,
+          question_number: q.question_number,
+          score_value: q.score_value,
           question_text: q.question_text,
           question_type_id: q.question_type_id,
         },
         { transaction }
       );
 
-      // 3.- insertar opciones(respuestas) para cada pregunta
+      // 3.- Insertar opciones(respuestas) para cada pregunta
       const optionsToInsert = q.options.map((opt) => ({
         question_id: newQuestion.id,
         option_text: opt.option_text,
@@ -109,7 +165,7 @@ router.post("/create", authenticateToken, async (req, res) => {
       await Options.bulkCreate(optionsToInsert, { transaction });
     }
 
-    // 4 .- confirmar transaccion
+    // 4 .- Confirmar transaccion
     await transaction.commit();
     res.status(201).json({
       message: "Exam created successfully",
@@ -121,115 +177,13 @@ router.post("/create", authenticateToken, async (req, res) => {
   }
 });
 
-// POST /api/grade-exam
-// router.post("/grade-exam", async (req, res) => {
-//   try {
-//     const { exam_id } = req.body;
-
-//     // Verifica si existe el archivo JSON con las respuestas detectadas
-//     const jsonPath = path.join(
-//       __dirname,
-//       "../../processing/detected_exam.json"
-//     );
-
-//     if (!fs.existsSync(jsonPath)) {
-//       return res.status(400).json({
-//         error: "No se encontró el archivo JSON de respuestas detectadas",
-//       });
-//     }
-
-//     // Lee el archivo JSON con las respuestas escaneadas
-//     const detectedAnswers = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
-//     console.log("✅ Respuestas detectadas desde el JSON:", detectedAnswers);
-
-//     if (!detectedAnswers || detectedAnswers.length === 0) {
-//       return res.status(400).json({ error: "No se detectaron respuestas" });
-//     }
-
-//     // Consultar todas las preguntas del examen
-//     const questions = await sequelize.query(
-//       `SELECT q.id AS question_id, q.question_text, o.option_text, o.is_correct
-//          FROM Questions q
-//          JOIN Options o ON q.id = o.question_id
-//          WHERE q.exam_id = ?`,
-//       { replacements: [exam_id], type: QueryTypes.SELECT }
-//     );
-
-//     console.log(
-//       `✅ Preguntas cargadas desde la BD para el examen ${exam_id}:`,
-//       questions
-//     );
-
-//     if (questions.length === 0) {
-//       return res
-//         .status(404)
-//         .json({ error: "No se encontraron preguntas para este examen" });
-//     }
-
-//     // Ordenar preguntas de acuerdo con el orden de aparición en el examen
-//     const orderedQuestions = questions.sort(
-//       (a, b) => a.question_id - b.question_id
-//     );
-
-//     // Mapeo de las opciones correctas por número de pregunta
-//     const correctAnswers = orderedQuestions.map((q) => {
-//       const correctOption =
-//         q.option_text && q.is_correct === 1
-//           ? q.option_text.toLowerCase()
-//           : null;
-//       return {
-//         question_number: orderedQuestions.indexOf(q) + 1, // El índice + 1 para alinear con el número de pregunta del JSON
-//         correct_answer: correctOption,
-//       };
-//     });
-
-//     // Comparación de respuestas
-//     let correctCount = 0;
-//     let incorrectCount = 0;
-
-//     detectedAnswers.forEach((detected) => {
-//       const correct = correctAnswers.find(
-//         (c) => c.question_number === detected.question_number
-//       );
-
-//       if (correct && correct.correct_answer) {
-//         if (detected.answer.toLowerCase() === correct.correct_answer) {
-//           correctCount++;
-//         } else {
-//           incorrectCount++;
-//         }
-//       }
-//     });
-
-//     // Calcular la calificación
-//     const totalQuestions = correctCount + incorrectCount;
-//     const score =
-//       totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
-
-//     console.log(`✅ Total de preguntas: ${totalQuestions}`);
-//     console.log(
-//       `✅ Correctas: ${correctCount}, Incorrectas: ${incorrectCount}, Puntaje: ${score}`
-//     );
-
-//     // Respuesta final
-//     res.json({
-//       exam_id,
-//       total_questions: totalQuestions,
-//       correct: correctCount,
-//       incorrect: incorrectCount,
-//       score: score.toFixed(2),
-//     });
-//   } catch (error) {
-//     console.error("Error al procesar el examen:", error);
-//     res.status(500).json({ error: "Error interno del servidor" });
-//   }
-// });
+// Revisar examen
+// Compara examen fisico (procesado por el ocr) VS examen registrado en db
 
 router.post("/grade-exams", async (req, res) => {
   try {
     const { exam_id } = req.body;
 
-    // Carpeta donde están los JSONs detectados
     const detectedExamsFolder = path.join(__dirname, "../detected_exams/");
 
     if (!fs.existsSync(detectedExamsFolder)) {
@@ -238,7 +192,6 @@ router.post("/grade-exams", async (req, res) => {
         .json({ error: "No se encontró la carpeta de exámenes detectados." });
     }
 
-    // Leer todos los archivos JSON
     const files = fs
       .readdirSync(detectedExamsFolder)
       .filter((file) => file.endsWith(".json"));
@@ -249,7 +202,6 @@ router.post("/grade-exams", async (req, res) => {
         .json({ error: "No hay archivos JSON para procesar." });
     }
 
-    // Traer las preguntas correctas del examen en el orden correcto
     const questions = await sequelize.query(
       `
       SELECT q.id AS question_id, q.question_text, o.option_text, o.is_correct
@@ -267,24 +219,31 @@ router.post("/grade-exams", async (req, res) => {
         .json({ error: "No se encontraron preguntas para este examen." });
     }
 
-    // Crear lista ordenada de respuestas correctas
-    const correctAnswersList = [];
-    const questionIdList = [];
-    for (const q of questions) {
-      if (q.is_correct) {
-        correctAnswersList.push(q.option_text.trim().toLowerCase());
-        questionIdList.push(q.question_id);
+    // Mapear respuestas correctas por número de pregunta
+    const correctAnswersMap = {};
+    let questionIndex = 1;
+    for (let i = 0; i < questions.length; i++) {
+      if (questions[i].is_correct) {
+        correctAnswersMap[questionIndex] = questions[i].option_text
+          .trim()
+          .toLowerCase();
+        questionIndex++;
+      } else {
+        // Solo incrementamos el índice cuando completamos una pregunta (última opción revisada)
+        if (
+          i + 1 === questions.length ||
+          questions[i + 1].question_id !== questions[i].question_id
+        ) {
+          questionIndex++;
+        }
       }
     }
 
     const results = [];
 
-    // Procesar cada archivo JSON detectado
     for (const file of files) {
       const filePath = path.join(detectedExamsFolder, file);
       const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
-      console.log("DATA:", data);
 
       const detectedAnswers = data.preguntas_detectadas || [];
 
@@ -294,10 +253,10 @@ router.post("/grade-exams", async (req, res) => {
 
       for (let i = 0; i < detectedAnswers.length; i++) {
         const detected = detectedAnswers[i];
-        const questionNumber = detected.question_number;
+        const questionNumber = parseInt(detected.question_number); // Asegurar que es número
         const userAnswer = detected.answer.trim().toLowerCase();
+        const correctAnswer = correctAnswersMap[questionNumber];
 
-        const correctAnswer = correctAnswersList[i]; // Usamos el índice
         const isCorrect = userAnswer === correctAnswer;
 
         if (isCorrect) correctCount++;
@@ -313,23 +272,10 @@ router.post("/grade-exams", async (req, res) => {
       const grade =
         totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
 
-      // results.push({
-      //   image_name: data.nombre_imagen || file,
-      //   total_questions: totalQuestions,
-      //   correct_answers: correctCount,
-      //   grade: grade.toFixed(2),
-      //   details,
-      // });
       results.push({
         image_name: data.nombre_imagen || file,
-        matricula:
-          data.matricula && data.matricula.trim() !== ""
-            ? data.matricula
-            : "No detectada",
-        nombre_completo:
-          data.nombre_completo && data.nombre_completo.trim() !== ""
-            ? data.nombre_completo
-            : "No detectado",
+        matricula: data.matricula?.trim() || "No detectada",
+        nombre_completo: data.nombre_completo?.trim() || "No detectado",
         total_questions: totalQuestions,
         correct_answers: correctCount,
         grade: grade.toFixed(2),
@@ -348,6 +294,7 @@ router.post("/grade-exams", async (req, res) => {
   }
 });
 
+// Procesamiento de imagenes
 router.post("/process-all", (req, res) => {
   try {
     const outputImagesPath = path.join(
@@ -440,6 +387,26 @@ router.post("/process-all", (req, res) => {
   } catch (err) {
     console.error("Error al procesar los exámenes:", err);
     res.status(500).send("Error al procesar los exámenes");
+  }
+});
+
+// Borrar datos temporales (pdf uploads,imagenes generadas, json generados)
+router.delete("/clear-temp-folders", (req, res) => {
+  try {
+    const foldersToClear = [
+      path.join(__dirname, "..", "detected_exams"),
+      path.join(__dirname, "..", "uploads"),
+      path.join(__dirname, "..", "..", "processing", "output_images"),
+    ];
+
+    foldersToClear.forEach((folderPath) => {
+      deleteFilesRecursively(folderPath);
+    });
+
+    res.json({ message: "Carpetas temporales limpiadas exitosamente" });
+  } catch (err) {
+    console.error("Error al limpiar carpetas temporales:", err);
+    res.status(500).json({ error: "Error al limpiar carpetas" });
   }
 });
 

@@ -1,6 +1,6 @@
 const { Sequelize, Model, DataTypes } = require("sequelize");
 const sequelize = require("../connection");
-const Users = require("../models/users.model");
+const Users = require("./users.model");
 
 class UserProfiles extends Model {}
 
@@ -46,7 +46,8 @@ UserProfiles.init(
   }
 );
 
-Users.hasOne(UserProfiles, { foreignKey: "user_id" });
-UserProfiles.belongsTo(Users, { foreignKey: "user_id" });
+// UserProfiles.belongsTo(Users, {
+//   foreignKey: "user_id",
+// });
 
 module.exports = UserProfiles;

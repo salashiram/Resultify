@@ -9,9 +9,9 @@ const UploadExam = () => {
   const [files, setFiles] = useState([]);
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  //
   const [results, setResults] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [fileNames, setFileNames] = useState([]);
 
   const handleReviewClick = async () => {
     setLoading(true);
@@ -55,7 +55,11 @@ const UploadExam = () => {
   }
 
   const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files)); // 🔥 Ahora guardamos todos los archivos
+    const files = Array.from(e.target.files); // Convertir FileList a Array
+    const names = files.map((file) => file.name);
+    setFileNames(names);
+
+    setFiles(Array.from(e.target.files));
   };
 
   const handleUpload = async () => {
@@ -66,7 +70,7 @@ const UploadExam = () => {
 
     const formData = new FormData();
     files.forEach((file) => {
-      formData.append("files", file); // 🔥 OJO, debe coincidir con el nombre en el backend
+      formData.append("files", file);
     });
 
     setLoading(true);
@@ -125,7 +129,19 @@ const UploadExam = () => {
             onChange={handleFileChange}
           ></input>
         </label>
-        <button onClick={handleUpload}>Subir</button>
+        <div className="files-list">
+          <h4>Archivos seleccionados:</h4>
+          {fileNames.length === 0 ? (
+            <p>No hay archivos cargados</p>
+          ) : (
+            <ul>
+              {fileNames.map((name, index) => (
+                <li key={index}>{name}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <button onClick={handleUpload}>Cargar</button>
       </div>
     </div>
   );

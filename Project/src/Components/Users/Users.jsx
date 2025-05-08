@@ -1,15 +1,44 @@
 import React, { useEffect, useState } from "react";
 import SideBar from "../SideBar/Sidebar";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./Users.css";
 
 const Users = () => {
   useAuthCheck([1, 2]);
-  const [searchParam, setSearchParam] = useState("user_id");
-  const [searchValue, setSearchValue] = useState("");
   const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState([]);
+  const [userId, setUserId] = useState("");
+
+  const getIdUser = async (id) => {
+    localStorage.setItem("idUser", id);
+  };
+
+  const searchUser = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        const response = await axios.get(
+          `http://localhost:3001/api/v1/users/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log(response.data);
+        const user = response.data;
+        setUserData(response.data.data);
+      } else {
+        // error
+      }
+    } catch (err) {
+      console.error("Error al buscar el usuario", err);
+      setUserData([]);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -17,7 +46,7 @@ const Users = () => {
 
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Ocurrió u error inesperado");
+        alert("Ocurrió un error inesperado");
         return;
       }
 
@@ -47,59 +76,12 @@ const Users = () => {
     } catch (err) {
       console.log("Error", err);
     } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    // fetchUsers();
   }, []);
-
-  const handleSearch = async () => {
-    return;
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    if (!searchValue) {
-      alert("Ingrese un valor para buscar");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const url = `http://localhost:3001/api/v1/users/find?${searchParam}=${encodeURIComponent(
-        searchValue
-      )}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Usuario no encontrado");
-      }
-
-      const data = await response.json();
-
-      console.log("Datos recibidos:", data);
-      if (data && data.ok && data.data) {
-        setUserData(data.data);
-        console.log("Estado de userData:", data.data);
-      } else {
-        setUserData(null);
-        alert("Usuario no encontrado.");
-      }
-    } catch (err) {
-      alert("No se pudo obtener la información");
-      setUserData(null);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div>
@@ -108,24 +90,20 @@ const Users = () => {
         <Link to="/NewUser">
           <button>Nuevo usuario</button>
         </Link>
-        <button>Cargar</button>
       </div>
-      <div className="dashboard-container">
-        <div className="search-content">
-          <div className="content-bx">
-            <input
-              type="text"
-              placeholder="Ingresa un valor"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-            />
-            <button onClick={handleSearch} disabled={loading}>
-              {loading ? "Buscando..." : "Buscar"}
-            </button>
-          </div>
-        </div>
 
-        <div className="table-content">
+      <div className="search-content">
+        <input
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+          type="text"
+          placeholder="Buscar por id"
+        />
+        <button onClick={searchUser}>Buscar</button>
+      </div>
+
+      <div className="dashboard-container">
+        <div className="users-table-content">
           <div className="users-table">
             {userData && (
               <table>
@@ -146,14 +124,16 @@ const Users = () => {
                     userData.map((user) => (
                       <tr key={user.id}>
                         <td>
-                          <a href="#">{user.id}</a>
+                          <a onClick={getIdUser(user.id)} href="/UserConfig">
+                            {user.id}
+                          </a>
                         </td>
                         <td>{user.email}</td>
                         <td>{user.student_id}</td>
                         <td>{user.first_name}</td>
                         <td>{user.last_name}</td>
                         <td>{user.phone_number || "N/A"}</td>
-                        <td>{user.userRol}</td>
+                        <td>{user.user_rol || user.userRol}</td>
                         <td>{user.is_active ? "Activo" : "Inactivo"}</td>
                       </tr>
                     ))

@@ -1,8 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import SideBar from "../SideBar/Sidebar";
-import { User, Upload, FileText, Download, Check } from "lucide-react";
+import { Upload, FileText, Check } from "lucide-react";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./MenuExam.css";
 
@@ -10,7 +9,7 @@ const options = [
   {
     id: 1,
     label: "Crear examen",
-    description: "Crear o modificar exámenes",
+    description: "Crear o modificar examen",
     icon: FileText,
     path: "/Exams",
   },
@@ -24,7 +23,7 @@ const options = [
   {
     id: 3,
     label: "Revisar Examenes",
-    description: "Revisar exámenes",
+    description: "Revisión de exámenes previamente cargados",
     icon: Check,
     path: "/ExamCheck",
   },

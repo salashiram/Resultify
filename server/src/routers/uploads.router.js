@@ -3,16 +3,13 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { exec } = require("child_process");
-const { route } = require("./users.router");
-const { error } = require("console");
 
 // Configurar multer para guardar el archivo temporalmente
 const upload = multer({ dest: "uploads/" });
 
-// Endpoint para obtener los nombres de las imágenes en la carpeta 'exam_images'
+// Obtener los nombres de las imágenes en la carpeta 'output_images'
 router.get("/get-uploaded-images", (req, res) => {
   try {
-    // const dirPath = path.join(__dirname, "processing/output_images/");
     const dirPath = path.join(__dirname, "../processing/output_images/");
     console.log("Ruta completa a la carpeta:", dirPath);
     fs.readdir(dirPath, (err, files) => {
@@ -27,7 +24,7 @@ router.get("/get-uploaded-images", (req, res) => {
   }
 });
 
-// 🔥 Ahora aceptamos varios archivos
+// cargar archivos
 router.post("/upload", upload.array("files", 10), (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).send("No se subió ningún archivo");
@@ -78,8 +75,7 @@ router.post("/upload", upload.array("files", 10), (req, res) => {
     });
 });
 
-// obtener examenes procesados
-
+// Obtener examenes procesados (PNG)
 router.get("/get-uploaded-exams", (req, res) => {
   const outputFolder = path.join(
     __dirname,
@@ -98,12 +94,30 @@ router.get("/get-uploaded-exams", (req, res) => {
     }
 
     // filtrar solo carpetas (cada carpeta es un examen)
-
     const examFolders = files
       .filter((file) => file.isDirectory())
       .map((folder) => folder.name);
 
     res.json(examFolders);
+  });
+});
+
+// obtener examenes procesados (JSON)
+router.get("/get-detected-exams", (req, res) => {
+  const detectedFolder = path.join(__dirname, "..", "detected_exams");
+
+  fs.readdir(detectedFolder, (err, files) => {
+    if (err) {
+      console.error("Error leyendo carpeta de examenes detectados", err);
+      return res
+        .status(500)
+        .json({ error: "Error al leer los examenes detectados" });
+    }
+
+    // Filtrar solo archivos que sean JSON
+    const detectedExams = files.filter((file) => file.endsWith(".json"));
+
+    res.json(detectedExams);
   });
 });
 

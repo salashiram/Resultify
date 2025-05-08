@@ -52,9 +52,12 @@
 	drop table if exists Questions;
 	create table Questions(
 	id int primary key AUTO_INCREMENT,
+    question_number int not null,
 	exam_id int not null,
 	question_text text not null,
 	question_type_id int default 1,
+    score_value decimal(10,2) not null,
+    is_active bool default(1),
 	createdAt timestamp default current_timestamp,
 	updatedAt datetime default current_timestamp on update current_timestamp  
 	);
@@ -65,6 +68,7 @@
 	question_id int not null,
 	option_text varchar(255) not null,
 	is_correct bool default 0,
+    is_active bool default(1),
 	createdAt timestamp default current_timestamp,
 	updatedAt datetime default current_timestamp on update current_timestamp  
 	);
@@ -76,7 +80,7 @@
 	description varchar(255) not null,
 	is_active bool default(1),
 	createdAt timestamp default current_timestamp,
-	updatedAt datetime default current_timestamp on update current_timestamp  
+	updatedAt datetime default current_timestamp on update current_timestamp
 	);
 
 	drop table if exists QuestionType;
@@ -89,27 +93,27 @@
 	updatedAt datetime default current_timestamp on update current_timestamp  
 	);
     
-
 	drop table if exists Submissions;
     create table Submissions(
     id int primary key AUTO_INCREMENT,
     exam_id int not null,
-    student_id int not null,
-    student_name varchar(255) not null,
+    student_id int,
+    student_name varchar(255),
+	score decimal(10,2) not null,
     is_active bool default 1,
-    score decimal(10,2) not null,
 	createdAt timestamp default current_timestamp,
 	updatedAt datetime default current_timestamp on update current_timestamp 
     );
     
-
 	drop table if exists Answers;
     create table Answers(
     id int primary key AUTO_INCREMENT,
     submission_id int not null,
     question_id int not null,
     is_correct bool default(1),
-    is_active bool default(1)
+    is_active bool default(1),
+	createdAt timestamp default current_timestamp,
+	updatedAt datetime default current_timestamp on update current_timestamp 
     );
 
 	/* CONSTRAINTS */
@@ -117,32 +121,30 @@
 	alter table Users
 		add constraint fk_user_rol foreign key (rol_id) references UserRol(id);
 		
-		
 	alter table UserProfiles
 		add constraint fk_user_profiles foreign key (user_id) references Users(id);
 		
-		
 	alter table Exams 
 		add constraint fk_exam_type foreign key (exam_type_id) references ExamType(id);
-		
-		
+        
+	alter table Exams
+		add constraint fk_exam_creator foreign key (created_by) references Users(id);
+        
 	alter table Questions 
 		add constraint fk_question_type foreign key (question_type_id) references QuestionType(id);
-		
 		
 	alter table Questions 
 		add constraint fk_exam_question foreign key (exam_id) references Exams(id);
 		
-
 	alter table Options
 		add constraint fk_question_option foreign key (question_id) references Questions(id);
         
 	alter table Submissions
 		add constraint fk_submission_exam foreign key (exam_id) references Exams(id);
-        
+		        
 	alter table Answers
 		add constraint fk_answers_submissions foreign key (submission_id) references Submissions(id);
-		
+
 	alter table Answers 
 		add constraint fk_answers_questions foreign key (question_id) references Questions(id);
 

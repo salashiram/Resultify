@@ -1,5 +1,6 @@
 const { Sequelize, Model, DataTypes } = require("sequelize");
 const sequelize = require("../connection");
+const UserProfiles = require("./userProfiles.model");
 
 class Users extends Model {}
 
@@ -31,5 +32,9 @@ Users.init(
     tableName: "Users",
   }
 );
+
+Users.hasOne(UserProfiles, {
+  foreignKey: "user_id",
+});
 
 module.exports = Users;

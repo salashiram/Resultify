@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import SideBar from "../SideBar/Sidebar";
 import { jwtDecode } from "jwt-decode";
 import "./UserProfile.css";
@@ -49,22 +49,15 @@ const UserProfile = () => {
       <div className="profile-container">
         <div className="banner">
           <div className="profile-picture"></div>
+
+          <Link to={"/EditUser"}>
+            <button>Editar perfil</button>
+          </Link>
         </div>
 
         <div className="user-info">
           <h2>{`${userData.first_name} ${userData.last_name}`}</h2>
           <p className="username">@{userData.email}</p>
-
-          <div className="details">
-            <p>
-              <strong>Matricula:</strong>{" "}
-              {userData.student_id || "No disponible"}
-            </p>
-            <p>
-              <strong>Teléfono de contacto:</strong>{" "}
-              {userData.phone_number || "No disponible"}
-            </p>
-          </div>
         </div>
       </div>
     </div>

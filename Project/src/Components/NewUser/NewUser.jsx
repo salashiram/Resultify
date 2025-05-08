@@ -44,46 +44,57 @@ const NewUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      if (!(formData.password == formData.confirmPassword)) {
-        alert("Las contraseñas no coinciden.");
-        return;
-      }
+    const token = localStorage.getItem("token");
 
-      console.log(formData);
-
-      const response = await axios.post(
-        "http://localhost:3001/api/v1/users/register",
-        {
-          email: formData.email,
-          student_id: formData.student_id,
-          password_hash: formData.password,
-          rol_id: formData.userRol,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          phone_number: formData.phoneNumber,
+    if (token) {
+      try {
+        if (!(formData.password == formData.confirmPassword)) {
+          alert("Las contraseñas no coinciden.");
+          return;
         }
-      );
 
-      if (response.status == 201) {
-        alert("Usuario creado exitosamente.");
-        navigate("/Users");
-      }
-    } catch (error) {
-      if (error.response && error.response.data.message) {
-        const errorMessage = error.response.data.message;
+        console.log(formData);
 
-        if (errorMessage === "Email already exists") {
-          alert("El correo electrónico ya está registrado.");
-        } else if (errorMessage === "Student id already exists") {
-          alert("La matricula ya está registrada");
+        const response = await axios.post(
+          "http://localhost:3001/api/v1/users/register",
+          {
+            email: formData.email,
+            student_id: formData.student_id,
+            password_hash: formData.password,
+            rol_id: formData.userRol,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            phone_number: formData.phoneNumber,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status == 201) {
+          alert("Usuario creado exitosamente.");
+          navigate("/Users");
+        }
+      } catch (error) {
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message;
+
+          if (errorMessage === "Email already exists") {
+            alert("El correo electrónico ya está registrado.");
+          } else if (errorMessage === "Student id already exists") {
+            alert("La matricula ya está registrada");
+          } else {
+            console.log(errorMessage);
+            alert("Ocurrió un error al registrar el usuario.");
+          }
         } else {
-          console.log(errorMessage);
           alert("Ocurrió un error al registrar el usuario.");
         }
-      } else {
-        alert("Ocurrió un error al registrar el usuario.");
       }
+    } else {
+      // error
     }
   };
 
@@ -99,9 +110,6 @@ const NewUser = () => {
           Guardar
         </button>
         <button onClick={cleanFields}>Limpiar</button>
-        <Link to="/Users">
-          <button>Cancelar</button>
-        </Link>
         <br />
         <p id="alertMessage">{alertMessage}</p>
       </div>

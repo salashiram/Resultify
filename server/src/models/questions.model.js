@@ -12,6 +12,10 @@ Questions.init(
       autoIncrement: true,
       allowNull: false,
     },
+    question_number: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     exam_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -22,6 +26,10 @@ Questions.init(
     },
     question_text: {
       type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    score_value: {
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
     question_type_id: {

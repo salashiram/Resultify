@@ -20,6 +20,23 @@
   );
   background-size: 30px 30px;
   background-position: -5px -5px;
+  position: relative;
+}
+
+.banner button {
+  width: 100px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background-color: #ffff;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  outline: none;
+  border: none;
 }
 
 .profile-picture {

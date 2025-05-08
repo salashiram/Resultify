@@ -4,9 +4,9 @@ const jwt = require("jsonwebtoken");
 const authenticateToken = require("../middleware/authMiddleware.middleware");
 const Users = require("../models/users.model");
 const UserProfiles = require("../models/userProfiles.model");
-const { response } = require("express");
 const sequelize = require("../connection");
 
+// Cosultar todos los usuarios
 router.get("/", authenticateToken, async (req, res) => {
   try {
     const [result] = await sequelize.query("select * from vShowUsers;");
@@ -31,7 +31,7 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
-// login
+// Iniciar sesión
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -85,7 +85,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// search user
+// Buscar usuario
 router.get("/find/", authenticateToken, async (req, res) => {
   const { id, email, student_id, phone_number } = req.query;
 
@@ -121,7 +121,7 @@ router.get("/find/", authenticateToken, async (req, res) => {
   }
 });
 
-// user details
+// Consultar detalles del usuario
 router.get("/:id", authenticateToken, async (req, res) => {
   try {
     const id = req.params.id;
@@ -150,8 +150,8 @@ router.get("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// user register
-router.post("/register", async (req, res) => {
+// Registro de usuario
+router.post("/register", authenticateToken, async (req, res) => {
   const {
     email,
     password_hash,
@@ -167,6 +167,7 @@ router.post("/register", async (req, res) => {
   try {
     const existingEmail = await Users.findOne({ where: { email } });
 
+    /// Validar que el correo electronico no este registrado
     if (existingEmail) {
       return res.status(400).json({
         ok: false,
@@ -178,6 +179,7 @@ router.post("/register", async (req, res) => {
       where: { student_id },
     });
 
+    // Validar que matricula no este registrada
     if (existingStudentId) {
       return res.status(400).json({
         ok: false,
@@ -209,6 +211,127 @@ router.post("/register", async (req, res) => {
       message: "Error",
       error: err.message,
       stack: err.stack,
+    });
+  }
+});
+
+// Actualizar usuario
+router.put("/update/:iduser", authenticateToken, async (req, res) => {
+  const { iduser } = req.params;
+  const { email, student_id, userRol, firstName, lastName, phoneNumber } =
+    req.body;
+
+  try {
+    const user = await Users.findByPk(iduser, {
+      include: [UserProfiles],
+    });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Usuario no encontrado" });
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    const userData = {};
+    if (email) userData.email = email;
+    if (userRol) userData.rol_id = userRol;
+
+    const profileData = {};
+    if (student_id) profileData.student_id = student_id;
+    if (firstName) profileData.first_name = firstName;
+    if (lastName) profileData.last_name = lastName;
+    if (phoneNumber) profileData.phone_number = phoneNumber;
+
+    if (Object.keys(userData).length > 0) {
+      await user.update(userData);
+    }
+
+    if (Object.keys(profileData).length > 0 && user.UserProfile) {
+      await user.UserProfile.update(profileData);
+    }
+
+    res.json({ ok: true, message: "Usuario actualizado exitosamente" });
+  } catch (err) {
+    console.error("Error updating user", err);
+    res.status(500).json({
+      ok: false,
+      message: "Error actualizando el usuario",
+    });
+  }
+});
+
+// Desactivar usuario (baja logica)
+router.put("/deactivate/:idUser", authenticateToken, async (req, res) => {
+  const { idUser } = req.params;
+  const { param } = req.body;
+
+  console.log(param);
+
+  if (!param) {
+    return res.status(400).json({
+      ok: false,
+      message: "Param are required",
+    });
+  }
+
+  try {
+    // param = 1 activar
+    // param = 0 desactivar
+    const result = await sequelize.query(
+      "call spDeactivateUser(:user_param,:user_id)",
+      {
+        replacements: { user_param: param, user_id: idUser },
+      }
+    );
+    res.status(201).json({
+      message: "User updated",
+    });
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({
+      ok: false,
+      message: "Error",
+    });
+  }
+});
+
+// Actualizar contrasenia
+router.put("/update/pass/:idUser", authenticateToken, async (req, res) => {
+  const { idUser } = req.params;
+  const { password_hash } = req.body;
+
+  console.log("Password: ", password_hash);
+
+  if (!password_hash) {
+    return res.status(400).json({
+      ok: false,
+      message: "Password are required",
+    });
+  }
+
+  try {
+    const userData = {};
+    if (password_hash) userData.password_hash = password_hash;
+
+    const hashedPassword = await bcrypt.hash(password_hash, 10);
+    const result = await sequelize.query(
+      "call spUpdatePassword(:user_id,:pass);",
+      {
+        replacements: { user_id: idUser, pass: hashedPassword },
+      }
+    );
+    res.status(201).json({
+      message: "password updated",
+    });
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({
+      ok: false,
+      message: "Error",
     });
   }
 });

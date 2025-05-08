@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
 import SideBar from "../SideBar/Sidebar";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./Exams.css";
 
 const Exams = () => {
   useAuthCheck([1, 2]);
+  const navigate = useNavigate();
   const [examData, setExamData] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const getExamId = async (id) => {
+    alert(id);
+    localStorage.setItem("examId", id);
+  };
 
   const fetchExams = async () => {
     try {
@@ -55,8 +62,6 @@ const Exams = () => {
     fetchExams();
   }, []);
 
-  const uploadExam = () => {};
-
   return (
     <div>
       <SideBar />
@@ -64,25 +69,9 @@ const Exams = () => {
         <Link to="/NewExam">
           <button>Nuevo</button>
         </Link>
-        <button onClick={uploadExam}>Cargar</button>
       </div>
       <div className="dashboard-container">
-        <div className="search-content">
-          <div className="search">
-            {/* <select name="" id="">
-              <option value="id">ID</option>
-              <option value="email">Correo electrónico</option>
-              <option value="student_id">Matrícula</option>
-              <option value="phone_number">Teléfono de contacto</option>
-            </select> */}
-          </div>
-          <div className="content-bx">
-            <input type="text" />
-            <button>Buscar</button>
-          </div>
-        </div>
-
-        <div className="table-content">
+        <div className="exam-table-content">
           <div className="exam-table">
             {loading ? (
               <p>Cargando...</p>
@@ -104,7 +93,12 @@ const Exams = () => {
                     examData.map((exam) => (
                       <tr key={exam.id}>
                         <td>
-                          <a href="#">{exam.id}</a>
+                          <a
+                            onClick={() => getExamId(exam.id)}
+                            href="/EditExam"
+                          >
+                            {exam.id}
+                          </a>
                         </td>
                         <td>{exam.title}</td>
                         <td>{exam.description}</td>

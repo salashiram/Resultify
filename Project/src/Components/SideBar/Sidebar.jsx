@@ -52,11 +52,11 @@ const Sidebar = () => {
     fetchUserData();
   }, []);
   const userProfile = () => navigate("/UserProfile");
-  const homeRedirect = () => navigate("/Home");
   const dashboardRedirect = () => navigate("/Dashboard");
   const toggleSidebar = () => setIsOpen(!isOpen);
   const logOut = () => {
-    // llamar api para destruir token
+    // Llamar api para destruir token // SOLO DESHACE TOKEN DE MANERA LOCAL.
+    // TODO: Crear api para destruir token desde raiz.
     localStorage.removeItem("token");
     navigate("/");
   };

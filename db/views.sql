@@ -12,9 +12,9 @@
 				UserProfiles.phone_number
 			from Users
 			left join UserRol on Users.rol_id = UserRol.id
-			left join UserProfiles on UserProfiles.user_id = Users.id
-            where Users.is_active = 1;
-            
+			left join UserProfiles on UserProfiles.user_id = Users.id;
+		
+
 	drop view if exists vShowExams;
     create view vShowExams as
 			select 
@@ -31,6 +31,7 @@
 			left join Users on Exams.created_by = Users.id
             left join UserProfiles on UserProfiles.user_id = Users.id;
             
+			
 	drop view if exists vShowActiveExams;
 	create view vShowActiveExams as
 			select 

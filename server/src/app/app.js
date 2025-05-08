@@ -2,11 +2,11 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const app = express();
-const path = require("path");
-const fs = require("fs");
 const usersRouter = require("../routers/users.router");
 const examsRouter = require("../routers/exams.router");
 const uploadsRouter = require("../routers/uploads.router");
+const submissionsRouter = require("../routers/submissions.router");
+
 app.use(express.json());
 
 app.use(
@@ -27,22 +27,13 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/exams", examsRouter);
 app.use("/api/v1/uploads", uploadsRouter);
-// app.use("/api/v1/uploads/", uploadsRouter);
-
-// Ruta para servir archivos estáticos (las imágenes)
-// app.use(
-//   "/uploads/exam_images",
-//   express.static(path.join(__dirname, "uploads/exam_images"))
-// );
-
-// const uploadRoutes = require("../routers/uploads.router");
-// app.use(uploadRoutes);
+app.use("/api/v1/submissions", submissionsRouter);
 
 app.use((err, req, res, next) => {
-  // console.error(err.stack);
   res.status(500).json({
     ok: false,
     message: "Ocurrió un error en el servidor",
+    error: err,
   });
 });
 
