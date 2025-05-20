@@ -31,7 +31,7 @@ const options = [
   {
     id: 4,
     label: "Hojas de respuestas",
-    description: "Hojas de respuestas",
+    description: "Hojas de respuestas generadas",
     icon: Sheet,
     path: "/AnswerSheets",
   },

@@ -97,7 +97,7 @@ const Users = () => {
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
           type="text"
-          placeholder="Buscar por id"
+          placeholder="Buscar usuario"
         />
         <button onClick={searchUser}>Buscar</button>
       </div>

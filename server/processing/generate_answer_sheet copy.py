@@ -1,65 +1,77 @@
-import sys
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
+import cv2
+import json
 import os
+import sys
 
-def generar_hoja_respuestas(nombre_archivo, num_preguntas=20):
-    c = canvas.Canvas(nombre_archivo, pagesize=letter)
-    width, height = letter
+def detect_marked_answers(image_path):
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    answers = []
 
-    # Encabezado
-    c.setFont("Helvetica-Bold", 14)
-    c.drawString(1 * inch, height - 1 * inch, "Hoja de Respuestas")
+    # Coordenadas Y para cada fila de pregunta (ajusta si agregas más)
+    y_positions = [
+        492, 565, 653, 730, 806,
+        898, 974, 1053, 1135, 1209,
+        1289, 1368, 1452, 1533, 1609,
+        1693, 1770, 1853, 1933, 2014
+    ]
 
-    c.setFont("Helvetica", 12)
-    c.drawString(1 * inch, height - 1.4 * inch, "Nombre del Alumno:")
-    c.line(2.8 * inch, height - 1.45 * inch, 7.5 * inch, height - 1.45 * inch)
+    # Coordenadas X para cada alveolo por opción
+    alveolos = {
+        "a": 201,
+        "b": 398,
+        "c": 598,
+        "d": 799,
+        "e": 999
+    }
 
-    c.drawString(1 * inch, height - 1.8 * inch, "Matrícula:")
-    c.line(2.0 * inch, height - 1.85 * inch, 4.5 * inch, height - 1.85 * inch)
+    for i, y in enumerate(y_positions):
+        row_scores = []
+        for option, x in alveolos.items():
+            # roi = gray[y - 15:y + 15, x - 15:x + 15]  # ROI de 30x30 para mayor tolerancia
+            roi = gray[y - 25:y + 25, x - 25:x + 25]  # 50x50
 
-    c.drawString(5.0 * inch, height - 1.8 * inch, "Grupo:")
-    c.line(5.8 * inch, height - 1.85 * inch, 7.5 * inch, height - 1.85 * inch)
 
-    # Burbujas
-    start_y = height - 2.5 * inch
-    pregunta_altura = 0.4 * inch
-    opciones = ["A", "B", "C", "D", "E"]
-    radio = 5
+            laplacian = cv2.Laplacian(roi, cv2.CV_64F)
+            score = laplacian.var()  # mide nivel de detalle o bordes
 
-    for i in range(1, num_preguntas + 1):
-        y = start_y - (i - 1) * pregunta_altura
+            row_scores.append((option, score))
 
-        c.setFont("Helvetica", 10)
-        c.drawString(0.5 * inch, y, f"{i}.")
+        # Ordenamos por mayor score (más marcado)
+        row_scores.sort(key=lambda x: x[1], reverse=True)
 
-        for j, op in enumerate(opciones):
-            x = 1.0 * inch + j * 1 * inch
-            c.drawString(x + 12, y, op)
-            c.circle(x, y + 3, radio, stroke=1, fill=0)
+        best_option, best_score = row_scores[0]
+        second_score = row_scores[1][1]
 
-        if y < 1 * inch:
-            c.showPage()
-            start_y = height - 1.5 * inch
+        # ⚠️ Umbral bajo para permitir tachas o rayones. Ajustable.
+        if best_score > 15 and (best_score - second_score > 2):
+            answers.append({
+                "question_number": i + 1,
+                "answer": best_option
+            })
 
-    c.save()
-    print(f"✅ PDF generado: {nombre_archivo}")
+    return answers
+
+def main():
+    if len(sys.argv) != 2:
+        print("Uso: python3 review_answer_sheet_marks.py <imagen>")
+        return
+
+    image_path = sys.argv[1]
+    detected = detect_marked_answers(image_path)
+
+    result = {
+        "preguntas_detectadas": detected,
+        "imagen_procesada": image_path
+    }
+
+    output_path = os.path.join("detected_exams", f"reviewed_{os.path.basename(image_path)}.json")
+    os.makedirs("detected_exams", exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(result, f, indent=4, ensure_ascii=False)
+
+    print(json.dumps(result))
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("Uso: python generate_answer_sheet.py <exam_id> <num_preguntas> <exam_title>")
-        sys.exit(1)
-
-    exam_id = sys.argv[1]
-    num_preguntas = int(sys.argv[2])
-    exam_title = sys.argv[3].replace("_", " ")
-
-    # exam_id = sys.argv[1]
-    # num_preguntas = int(sys.argv[2])
-
-    output_dir = os.path.join(os.path.dirname(__file__), "generated_pdfs")
-    os.makedirs(output_dir, exist_ok=True)
-
-    output_path = os.path.join(output_dir, f"respuestas_examen_{exam_id}.pdf")
-    generar_hoja_respuestas(output_path, num_preguntas)
+    main()

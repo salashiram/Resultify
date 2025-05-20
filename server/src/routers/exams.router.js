@@ -6,13 +6,13 @@ const Questions = require("../models/questions.model");
 const Options = require("../models/options.model");
 const sequelize = require("../connection");
 const mysql = require("mysql2/promise");
-const pool = require("../mysql"); // importa tu conexión con mysql2
+const pool = require("../mysql");
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 const { json, QueryTypes } = require("sequelize");
 
-// functions
+//
 const deleteFilesRecursively = (folderPath) => {
   if (fs.existsSync(folderPath)) {
     const entries = fs.readdirSync(folderPath);
@@ -166,10 +166,8 @@ router.post("/create", authenticateToken, async (req, res) => {
 
     // 4 .- Confirmar transaccion
     await transaction.commit();
-    // res.status(201).json({
-    //   message: "Exam created successfully",
-    // });
-    // 🧾 Generar hoja de respuestas PDF
+
+    // Generar hoja de respuestas PDF
     const examId = newExam.id;
     const numQuestions = questions.length;
 
@@ -184,7 +182,6 @@ router.post("/create", authenticateToken, async (req, res) => {
     const safeTitle = title.replace(/\s+/g, "_");
 
     const command = `python3 "${scriptPath}" "${examId}" "${numQuestions}" "${safeTitle}"`;
-    // const command = `python3 "${scriptPath}" "${examId}" "${numQuestions}"`;
 
     exec(command, (error, stdout, stderr) => {
       if (error) {
@@ -259,7 +256,7 @@ router.post("/grade-exams", async (req, res) => {
           .toLowerCase();
         questionIndex++;
       } else {
-        // Solo incrementamos el índice cuando completamos una pregunta (última opción revisada)
+        // Solo incrementamos el índice cuando completamos una pregunta (ultima opción revisada)
         if (
           i + 1 === questions.length ||
           questions[i + 1].question_id !== questions[i].question_id
@@ -425,125 +422,6 @@ router.post("/process-all", (req, res) => {
     res.status(500).send("Error al procesar los exámenes");
   }
 });
-
-// Procesamiento de imagenes
-// router.post("/process-all", (req, res) => {
-//   try {132
-//     const outputImagesPath = path.join(
-//       __dirname,
-//       "..",
-//       "..",
-//       "processing",
-//       "output_images"
-//     );
-
-//     if (!fs.existsSync(outputImagesPath)) {
-//       return res
-//         .status(500)
-//         .send("No se encontró la carpeta de imágenes procesadas");
-//     }
-
-//     // leer todas las subcarpetas dentro de output_images
-//     fs.readdir(outputImagesPath, (err, folders) => {
-//       if (err) {
-//         return res
-//           .status(500)
-//           .send("Error al leer las carpetas de los exámenes");
-//       }
-
-//       // Filtramos solo las carpetas (no archivos)
-//       const examFolders = folders.filter((folder) =>
-//         fs.statSync(path.join(outputImagesPath, folder)).isDirectory()
-//       );
-//       if (examFolders.length === 0) {
-//         return res.status(404).send("No se encontraron exámenes procesados");
-//       }
-
-//       const results = [];
-
-//       // Procesar cada carpeta (cada examen)
-//       examFolders.forEach((folder, index) => {
-//         const folderPath = path.join(outputImagesPath, folder);
-
-//         // Leer las imágenes dentro de cada subcarpeta
-//         fs.readdir(folderPath, (err, files) => {
-//           if (err) {
-//             return res
-//               .status(500)
-//               .send("Error al leer las imágenes en la subcarpeta");
-//           }
-
-//           const examImages = files.filter((file) => file.endsWith(".png")); // solo las imágenes PNG
-//           if (examImages.length === 0) {
-//             return res
-//               .status(404)
-//               .send(`No se encontraron imágenes en la carpeta ${folder}`);
-//           }
-
-//           // Procesar cada imagen dentro de la subcarpeta
-//           examImages.forEach((image, imageIndex) => {
-//             const imagePath = path.join(folderPath, image);
-
-//             exec(
-//               `python3 ../processing/text.py "${imagePath}"`,
-//               (error, stdout, stderr) => {
-//                 if (error) {
-//                   console.error(`Error real al procesar ${image}:`, error);
-//                   return;
-//                 }
-
-//                 if (stderr) {
-//                   console.warn(`Advertencia al procesar ${image}:`, stderr);
-//                   // No hacemos return, solo mostramos el warning
-//                 }
-
-//                 console.log(`Texto procesado para ${image}:`, stdout);
-//                 // Aquí deberíamos parsear stdout (el JSON generado por el script de Python)
-//                 // const result = JSON.parse(stdout);
-//                 // result.folder = folder; // Agregar la carpeta para identificar el examen
-//                 // results.push(result);
-//                 try {
-//                   const lines = stdout.trim().split("\n");
-//                   const lastLine = lines[lines.length - 1]; // Suponemos que el JSON se imprime al final
-//                   const result = JSON.parse(lastLine);
-//                   result.folder = folder;
-//                   results.push(result);
-
-//                   if (
-//                     results.length ===
-//                     examFolders.length * examImages.length
-//                   ) {
-//                     res.json({
-//                       message: "Exámenes procesados correctamente",
-//                       results,
-//                     });
-//                   }
-//                 } catch (err) {
-//                   console.error(
-//                     ` No se pudo parsear JSON del archivo ${image}:`,
-//                     stdout
-//                   );
-//                 }
-
-//                 // Cuando todos los exámenes hayan sido procesados
-//                 if (results.length === examFolders.length * examImages.length) {
-//                   res.json({
-//                     message: "Exámenes procesados correctamente",
-//                     results,
-//                   });
-//                 }
-//               }
-
-//             );
-//           });
-//         });
-//       });
-//     });
-//   } catch (err) {
-//     console.error("Error al procesar los exámenes:", err);
-//     res.status(500).send("Error al procesar los exámenes");
-//   }
-// });
 
 // Borrar datos temporales (pdf uploads,imagenes generadas, json generados)
 router.delete("/clear-temp-folders", (req, res) => {

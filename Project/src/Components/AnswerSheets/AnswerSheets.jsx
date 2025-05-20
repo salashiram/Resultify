@@ -51,6 +51,15 @@ const AnswerSheets = () => {
                   >
                     Imprimir
                   </button>
+                  <button
+                    style={{
+                      marginLeft: "1rem",
+                      backgroundColor: "#2e2e2e",
+                      color: "white",
+                    }}
+                  >
+                    Eliminar
+                  </button>
                 </li>
               ))}
             </ul>

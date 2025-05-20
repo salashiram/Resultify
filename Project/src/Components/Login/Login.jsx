@@ -28,14 +28,15 @@ const Login = () => {
         navigate("/UserProfile");
       }
     } catch (err) {
-      alert(err.response?.data?.message || "Las credenciales no son válidas");
+      // err.response?.data?.message;
+      alert("Las credenciales no son válidas");
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-form-container">
-        <h2>Iniciar Sesión</h2>
+        <h2>Iniciar sesión</h2>
         <form className="login-form" id="loginForm" onSubmit={loginValidate}>
           <label htmlFor="email">Correo electrónico</label>
           <input

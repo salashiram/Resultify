@@ -2,64 +2,64 @@
     "preguntas_detectadas": [
         {
             "question_number": 1,
-            "answer": "A"
+            "answer": "b"
         },
         {
             "question_number": 2,
-            "answer": "C"
+            "answer": "b"
         },
         {
             "question_number": 3,
-            "answer": "A"
+            "answer": "b"
         },
         {
             "question_number": 4,
-            "answer": "C"
+            "answer": "a"
         },
         {
             "question_number": 5,
-            "answer": "E"
+            "answer": "b"
         },
         {
             "question_number": 6,
-            "answer": "D"
+            "answer": "b"
         },
         {
             "question_number": 7,
-            "answer": "C"
+            "answer": "a"
         },
         {
             "question_number": 8,
-            "answer": "E"
+            "answer": "b"
         },
         {
             "question_number": 9,
-            "answer": "B"
+            "answer": "a"
         },
         {
             "question_number": 10,
-            "answer": "B"
+            "answer": "a"
         },
         {
             "question_number": 11,
-            "answer": "E"
+            "answer": "a"
         },
         {
             "question_number": 12,
-            "answer": "D"
+            "answer": "a"
         },
         {
             "question_number": 13,
-            "answer": "A"
+            "answer": "b"
         },
         {
             "question_number": 14,
-            "answer": "C"
+            "answer": "b"
         },
         {
             "question_number": 15,
-            "answer": "D"
+            "answer": "a"
         }
     ],
-    "imagen_procesada": "/Users/hiramsalas/Documents/Resultify/server/processing/output_images/1747698711974/page_1.png"
+    "imagen_procesada": "/Users/hiramsalas/Documents/Resultify/server/processing/output_images/1747783501990/page_1.png"
 }
