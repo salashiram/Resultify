@@ -1,0 +1,65 @@
+{
+    "preguntas_detectadas": [
+        {
+            "question_number": 1,
+            "answer": "A"
+        },
+        {
+            "question_number": 2,
+            "answer": "C"
+        },
+        {
+            "question_number": 3,
+            "answer": "A"
+        },
+        {
+            "question_number": 4,
+            "answer": "C"
+        },
+        {
+            "question_number": 5,
+            "answer": "E"
+        },
+        {
+            "question_number": 6,
+            "answer": "D"
+        },
+        {
+            "question_number": 7,
+            "answer": "C"
+        },
+        {
+            "question_number": 8,
+            "answer": "E"
+        },
+        {
+            "question_number": 9,
+            "answer": "B"
+        },
+        {
+            "question_number": 10,
+            "answer": "B"
+        },
+        {
+            "question_number": 11,
+            "answer": "E"
+        },
+        {
+            "question_number": 12,
+            "answer": "D"
+        },
+        {
+            "question_number": 13,
+            "answer": "A"
+        },
+        {
+            "question_number": 14,
+            "answer": "C"
+        },
+        {
+            "question_number": 15,
+            "answer": "D"
+        }
+    ],
+    "imagen_procesada": "/Users/hiramsalas/Documents/Resultify/server/processing/output_images/1747698711974/page_1.png"
+}

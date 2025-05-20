@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import SideBar from "../SideBar/Sidebar";
-import { Upload, FileText, Check } from "lucide-react";
+import { Upload, FileText, Check, Sheet } from "lucide-react";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./MenuExam.css";
+// import { path } from "../../../../server/src/app/app";
 
 const options = [
   {
@@ -26,6 +27,13 @@ const options = [
     description: "Revisión de exámenes previamente cargados",
     icon: Check,
     path: "/ExamCheck",
+  },
+  {
+    id: 4,
+    label: "Hojas de respuestas",
+    description: "Hojas de respuestas",
+    icon: Sheet,
+    path: "/AnswerSheets",
   },
 ];
 

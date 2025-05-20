@@ -22,12 +22,16 @@ def main():
     custom_config = r'--oem 3 --psm 6'
     texto_detectado = pytesseract.image_to_string(thresholded, config=custom_config).strip()
 
-    # Buscar preguntas tipo "1. true", "2. false", etc.
-    pattern = re.compile(r'(\d+)\.\s*(true|false)', re.IGNORECASE)
-    matches = pattern.findall(texto_detectado)
+    # Expresiones regulares para preguntas
+    pattern_tf = re.compile(r'(\d+)\.\s*(true|false)', re.IGNORECASE)
+    pattern_fill = re.compile(r'(\d+)\.\s*([_\w]+)\s*[:：]', re.IGNORECASE)
+
+    matches_tf = pattern_tf.findall(texto_detectado)
+    matches_fill = pattern_fill.findall(texto_detectado)
 
     questions_with_answers = []
-    for match in matches:
+
+    for match in matches_tf:
         question_number = int(match[0])
         answer = match[1].lower()
         questions_with_answers.append({
@@ -35,26 +39,34 @@ def main():
             "answer": answer
         })
 
- 
-    # Buscar matrícula y nombre
+    for match in matches_fill:
+        question_number = int(match[0])
+        # Limpiar el texto: quitar guiones bajos, puntos, etc.
+        raw_answer = match[1].strip().lower()
+        cleaned_answer = re.sub(r'[^a-záéíóúñü0-9]+', '', raw_answer)  # solo letras y números
+        if not any(q["question_number"] == question_number for q in questions_with_answers):
+            questions_with_answers.append({
+                "question_number": question_number,
+                "answer": cleaned_answer
+            })
+
+    # Extraer matrícula y nombre
     matricula_match = re.search(r'Matricula:\s*(\d+)', texto_detectado, re.IGNORECASE)
     nombre_match = re.search(r'Nombre completo:\s*(.+?)(?:\n|$)', texto_detectado, re.IGNORECASE)
 
     matricula = matricula_match.group(1) if matricula_match else None
     nombre_completo = nombre_match.group(1).strip() if nombre_match else None
 
-
- 
-
-    # Armar la respuesta final
+    # JSON final
     output = {
         "texto_detectado": texto_detectado,
         "nombre_imagen": image_path,
         "matricula": matricula,
         "nombre_completo": nombre_completo,
-        "preguntas_detectadas": questions_with_answers
+        "preguntas_detectadas": sorted(questions_with_answers, key=lambda x: x["question_number"])
     }
 
+    # Guardar archivo local (opcional)
     output_dir = "./detected_exams"
     os.makedirs(output_dir, exist_ok=True)
 
@@ -66,7 +78,8 @@ def main():
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=4, ensure_ascii=False)
 
-    print(f"✅ JSON guardado exitosamente en: {json_path}")
+    #  Imprimir solo el JSON en consola (stdout limpio)
+    print(json.dumps(output, ensure_ascii=False))
 
 def error_response(message):
     error = {

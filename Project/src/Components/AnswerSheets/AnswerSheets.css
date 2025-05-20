@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.sheet-container {
+  display: flex;
+  width: 100%;
+  padding: 50px;
+  gap: 20px;
+  margin: 0 auto;
+}
+
+.sheet-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  height: 100%;
+  margin: auto;
+  margin-top: 100px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 20px;
+  padding-bottom: 20px;
+}
+
+.sheet-content ul {
+  margin-top: 50px;
+}
+
+.sheet-content p {
+  margin-top: 50px;
+}
+
+.sheet-content li {
+  list-style: none;
+  padding: 10px;
+  margin-top: 30px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sheet-content button {
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  padding: 10px;
+  cursor: pointer;
+}

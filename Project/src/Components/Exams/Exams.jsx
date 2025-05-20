@@ -12,7 +12,7 @@ const Exams = () => {
   const [loading, setLoading] = useState(false);
 
   const getExamId = async (id) => {
-    alert(id);
+    // alert(id);
     localStorage.setItem("examId", id);
   };
 
