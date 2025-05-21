@@ -25,7 +25,7 @@ router.get("/get-uploaded-images", (req, res) => {
 });
 
 // cargar archivos
-router.post("/upload", upload.array("files", 10), (req, res) => {
+router.post("/upload", upload.array("files", 50), (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).send("No se subió ningún archivo");
   }
@@ -38,7 +38,9 @@ router.post("/upload", upload.array("files", 10), (req, res) => {
 
     // Creamos una promesa para cada procesamiento
     const promise = new Promise((resolve, reject) => {
-      const uniqueId = Date.now();
+      // const uniqueId = Date.now();
+      const uniqueId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+
       exec(
         `python3 ../processing/process_pdf.py "${filePath}" "${uniqueId}"`,
         (error, stdout, stderr) => {

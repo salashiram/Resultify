@@ -13,3 +13,10 @@ for i, img in enumerate(images):
     img_path = os.path.join(output_dir, f"page_{i + 1}.png")
     img.save(img_path, "PNG")
     print(f"✅ Imagen guardada: {img_path}")
+
+    # try:
+    #     images = convert_from_path(pdf_path)
+    #     except Exception as e:
+    #     print(f" Error al convertir PDF: {e}")
+    #     sys.exit(1)
+

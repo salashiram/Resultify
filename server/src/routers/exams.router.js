@@ -11,6 +11,7 @@ const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 const { json, QueryTypes } = require("sequelize");
+const pLimit = require("p-limit");
 
 //
 const deleteFilesRecursively = (folderPath) => {
@@ -321,7 +322,7 @@ router.post("/grade-exams", async (req, res) => {
   }
 });
 
-router.post("/process-all", (req, res) => {
+router.post("/process-all", async (req, res) => {
   try {
     const outputImagesPath = path.join(
       __dirname,
@@ -337,91 +338,177 @@ router.post("/process-all", (req, res) => {
         .send("No se encontró la carpeta de imágenes procesadas");
     }
 
-    fs.readdir(outputImagesPath, (err, folders) => {
-      if (err) {
-        return res
-          .status(500)
-          .send("Error al leer las carpetas de los exámenes");
-      }
-
-      const examFolders = folders.filter((folder) =>
+    const folders = fs
+      .readdirSync(outputImagesPath)
+      .filter((folder) =>
         fs.statSync(path.join(outputImagesPath, folder)).isDirectory()
       );
 
-      if (examFolders.length === 0) {
-        return res.status(404).send("No se encontraron exámenes procesados");
+    if (folders.length === 0) {
+      return res.status(404).send("No se encontraron exámenes procesados");
+    }
+
+    const limit = pLimit(20); // Limita a n procesos simultáneos
+    const processPromises = [];
+
+    for (const folder of folders) {
+      const folderPath = path.join(outputImagesPath, folder);
+      const files = fs
+        .readdirSync(folderPath)
+        .filter((file) => file.endsWith(".png"));
+
+      for (const image of files) {
+        const imagePath = path.join(folderPath, image);
+
+        const promise = limit(
+          () =>
+            new Promise((resolve) => {
+              const command = `python3 ../processing/review_answer_sheet.py "${imagePath}"`;
+
+              exec(command, (error, stdout, stderr) => {
+                if (error) {
+                  console.error(`❌ Error en ${image}:`, error);
+                  return resolve({ error: true, image, folder });
+                }
+
+                if (stderr) {
+                  console.warn(`⚠️ Stderr en ${image}:`, stderr);
+                }
+
+                try {
+                  const result = JSON.parse(stdout.trim());
+                  result.folder = folder;
+                  result.imageName = image;
+                  resolve(result);
+                } catch (err) {
+                  console.error(`❌ No se pudo parsear JSON de ${image}:`, err);
+                  resolve({ error: true, image, folder });
+                }
+              });
+            })
+        );
+
+        processPromises.push(promise);
       }
+    }
 
-      const results = [];
-      let totalExpected = 0;
-      let processedCount = 0;
+    const results = await Promise.all(processPromises);
+    const success = results.filter((r) => !r.error);
+    const failed = results.length - success.length;
 
-      examFolders.forEach((folder) => {
-        const folderPath = path.join(outputImagesPath, folder);
-
-        fs.readdir(folderPath, (err, files) => {
-          if (err) {
-            console.error("Error al leer imágenes:", err);
-            processedCount++;
-            return;
-          }
-
-          const examImages = files.filter((file) => file.endsWith(".png"));
-          totalExpected += examImages.length;
-
-          if (examImages.length === 0) {
-            processedCount++;
-            return;
-          }
-
-          examImages.forEach((image) => {
-            const imagePath = path.join(folderPath, image);
-
-            // ✅ Ejecutamos el script hardcoded
-            const command = `python3 ../processing/review_answer_sheet.py "${imagePath}"`;
-
-            exec(command, (error, stdout, stderr) => {
-              processedCount++;
-
-              if (error) {
-                console.error(`❌ Error al procesar ${image}:`, error);
-                return;
-              }
-
-              if (stderr) {
-                console.warn(`⚠️ Advertencia procesando ${image}:`, stderr);
-              }
-
-              try {
-                const result = JSON.parse(stdout.trim());
-                result.folder = folder;
-                result.imageName = image;
-                results.push(result);
-              } catch (err) {
-                console.error(`❌ No se pudo parsear JSON de ${image}:`, err);
-              }
-
-              if (processedCount >= totalExpected) {
-                res.json({
-                  message: "Exámenes procesados correctamente",
-                  results,
-                  stats: {
-                    totalProcessed: processedCount,
-                    successCount: results.length,
-                    errorCount: processedCount - results.length,
-                  },
-                });
-              }
-            });
-          });
-        });
-      });
+    res.json({
+      message: "Procesamiento terminado",
+      processed: success.length,
+      failed,
+      results: success,
     });
   } catch (err) {
-    console.error("Error al procesar los exámenes:", err);
-    res.status(500).send("Error al procesar los exámenes");
+    console.error("Error general en el procesamiento:", err);
+    res.status(500).send("Error en el procesamiento general");
   }
 });
+
+// router.post("/process-all", (req, res) => {
+//   try {
+//     const outputImagesPath = path.join(
+//       __dirname,
+//       "..",
+//       "..",
+//       "processing",
+//       "output_images"
+//     );
+
+//     if (!fs.existsSync(outputImagesPath)) {
+//       return res
+//         .status(500)
+//         .send("No se encontró la carpeta de imágenes procesadas");
+//     }
+
+//     fs.readdir(outputImagesPath, (err, folders) => {
+//       if (err) {
+//         return res
+//           .status(500)
+//           .send("Error al leer las carpetas de los exámenes");
+//       }
+
+//       const examFolders = folders.filter((folder) =>
+//         fs.statSync(path.join(outputImagesPath, folder)).isDirectory()
+//       );
+
+//       if (examFolders.length === 0) {
+//         return res.status(404).send("No se encontraron exámenes procesados");
+//       }
+
+//       const results = [];
+//       let totalExpected = 0;
+//       let processedCount = 0;
+
+//       examFolders.forEach((folder) => {
+//         const folderPath = path.join(outputImagesPath, folder);
+
+//         fs.readdir(folderPath, (err, files) => {
+//           if (err) {
+//             console.error("Error al leer imágenes:", err);
+//             processedCount++;
+//             return;
+//           }
+
+//           const examImages = files.filter((file) => file.endsWith(".png"));
+//           totalExpected += examImages.length;
+
+//           if (examImages.length === 0) {
+//             processedCount++;
+//             return;
+//           }
+
+//           examImages.forEach((image) => {
+//             const imagePath = path.join(folderPath, image);
+
+//             // ✅ Ejecutamos el script hardcoded
+//             const command = `python3 ../processing/review_answer_sheet.py "${imagePath}"`;
+
+//             exec(command, (error, stdout, stderr) => {
+//               processedCount++;
+
+//               if (error) {
+//                 console.error(`❌ Error al procesar ${image}:`, error);
+//                 return;
+//               }
+
+//               if (stderr) {
+//                 console.warn(`⚠️ Advertencia procesando ${image}:`, stderr);
+//               }
+
+//               try {
+//                 const result = JSON.parse(stdout.trim());
+//                 result.folder = folder;
+//                 result.imageName = image;
+//                 results.push(result);
+//               } catch (err) {
+//                 console.error(`❌ No se pudo parsear JSON de ${image}:`, err);
+//               }
+
+//               if (processedCount >= totalExpected) {
+//                 res.json({
+//                   message: "Exámenes procesados correctamente",
+//                   results,
+//                   stats: {
+//                     totalProcessed: processedCount,
+//                     successCount: results.length,
+//                     errorCount: processedCount - results.length,
+//                   },
+//                 });
+//               }
+//             });
+//           });
+//         });
+//       });
+//     });
+//   } catch (err) {
+//     console.error("Error al procesar los exámenes:", err);
+//     res.status(500).send("Error al procesar los exámenes");
+//   }
+// });
 
 // Borrar datos temporales (pdf uploads,imagenes generadas, json generados)
 router.delete("/clear-temp-folders", (req, res) => {
