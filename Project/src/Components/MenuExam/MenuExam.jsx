@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import SideBar from "../SideBar/Sidebar";
-import { Upload, FileText, Check, Sheet } from "lucide-react";
+import { Upload, FileText, Check, Sheet, Verified } from "lucide-react";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./MenuExam.css";
 // import { path } from "../../../../server/src/app/app";
@@ -34,6 +34,13 @@ const options = [
     description: "Hojas de respuestas generadas",
     icon: Sheet,
     path: "/AnswerSheets",
+  },
+  {
+    id: 5,
+    label: "Resultados",
+    description: "Ver resultados de los examenes",
+    icon: Verified,
+    path: "/Submits",
   },
 ];
 

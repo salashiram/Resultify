@@ -159,12 +159,21 @@ const ExamCheck = () => {
       return;
     }
 
+    const { exam_id, results } = gradedResults;
+
+    results.forEach((result, index) => {
+      console.log(`Resultado ${index + 1}:`);
+      console.log("Matrícula:", result.matricula);
+      console.log("Nombre:", result.nombre_completo);
+      console.log("Calificación:", result.grade);
+    });
+
     const payload = {
-      exam_id: gradedResults.exam_id,
-      results: gradedResults.results.map((result) => ({
-        matricula: result.matricula,
-        nombre_completo: result.nombre_completo,
-        grade: result.score, // aseguramos que coincida con `score` esperado en el backend
+      exam_id,
+      results: results.map((result) => ({
+        matricula: result.matricula || "default",
+        nombre_completo: result.nombre_completo || "default",
+        grade: Number(result.score || result.grade),
       })),
     };
 

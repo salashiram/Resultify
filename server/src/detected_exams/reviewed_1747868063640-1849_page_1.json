@@ -1,0 +1,68 @@
+{
+    "nombre_completo": "",
+    "matricula": "default",
+    "grupo": "default",
+    "preguntas_detectadas": [
+        {
+            "question_number": 1,
+            "answer": "d"
+        },
+        {
+            "question_number": 2,
+            "answer": "d"
+        },
+        {
+            "question_number": 3,
+            "answer": "e"
+        },
+        {
+            "question_number": 4,
+            "answer": "a"
+        },
+        {
+            "question_number": 5,
+            "answer": "b"
+        },
+        {
+            "question_number": 6,
+            "answer": "b"
+        },
+        {
+            "question_number": 7,
+            "answer": "b"
+        },
+        {
+            "question_number": 8,
+            "answer": "a"
+        },
+        {
+            "question_number": 9,
+            "answer": "b"
+        },
+        {
+            "question_number": 10,
+            "answer": "b"
+        },
+        {
+            "question_number": 11,
+            "answer": "a"
+        },
+        {
+            "question_number": 12,
+            "answer": "b"
+        },
+        {
+            "question_number": 13,
+            "answer": "b"
+        },
+        {
+            "question_number": 14,
+            "answer": "e"
+        },
+        {
+            "question_number": 15,
+            "answer": "a"
+        }
+    ],
+    "imagen_procesada": "/Users/hiramsalas/Documents/Resultify/server/processing/output_images/1747868063640-1849/page_1.png"
+}

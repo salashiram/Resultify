@@ -16,6 +16,8 @@ import UploadExam from "./Components/UploadExam/UploadExam";
 import ExamCheck from "./Components/ExamCheck/ExamCheck";
 import ExamResults from "./Components/ExamResults/ExamResults";
 import AnswerSheets from "./Components/AnswerSheets/AnswerSheets";
+import Submits from "./Components/Submits/Submits";
+import SubmitsDetails from "./Components/SubmitsDetails/SubmitsDetails";
 
 const App = () => {
   return (
@@ -38,6 +40,8 @@ const App = () => {
         <Route path="/ExamResults" element={<ExamResults />} />
         <Route path="/UserConfig" element={<UserConfig />} />
         <Route path="/AnswerSheets" element={<AnswerSheets />} />
+        <Route path="/Submits" element={<Submits />} />
+        <Route path="/SubmitsDetails" element={<SubmitsDetails />} />
       </Routes>
     </Router>
   );

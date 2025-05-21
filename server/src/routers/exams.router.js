@@ -389,7 +389,7 @@ router.post("/process-all", async (req, res) => {
       return res.status(404).send("No se encontraron exámenes procesados");
     }
 
-    const limit = pLimit(20); // Limita a n procesos simultáneos
+    const limit = pLimit(10); // Limita a n procesos simultáneos
     const processPromises = [];
 
     for (const folder of folders) {

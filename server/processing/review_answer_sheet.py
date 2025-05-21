@@ -1,7 +1,26 @@
 import cv2
+import pytesseract
 import json
 import os
 import sys
+import re
+
+def extract_header_text(image):
+    """Extrae nombre, matrícula y grupo del encabezado OCR"""
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    header_roi = gray[0:300, :]  # Área superior del documento
+    text = pytesseract.image_to_string(header_roi)
+
+    # Patrón flexible para campos
+    nombre = re.search(r"Nombre.*?:\s*(.*)", text, re.IGNORECASE)
+    matricula = re.search(r"Matr[íi]cula[: ]+(\d+)", text, re.IGNORECASE)
+    grupo = re.search(r"Grupo[: ]+([A-Za-z0-9]+)", text, re.IGNORECASE)
+
+    return {
+        "nombre_completo": nombre.group(1).strip() if nombre else "default",
+        "matricula": matricula.group(1).strip() if matricula else "default",
+        "grupo": grupo.group(1).strip() if grupo else "default",
+    }
 
 def detect_marked_answers(image_path):
     image = cv2.imread(image_path)
@@ -46,11 +65,17 @@ def main():
 
     image_path = sys.argv[1]
     try:
+        image = cv2.imread(image_path)
+        if image is None:
+            raise ValueError("No se pudo abrir la imagen")
+
+        header = extract_header_text(image)
         detected = detect_marked_answers(image_path)
         folder_name = os.path.basename(os.path.dirname(image_path))
         file_name = os.path.basename(image_path).replace(".png", "")
 
         result = {
+            **header,
             "preguntas_detectadas": detected,
             "imagen_procesada": image_path
         }

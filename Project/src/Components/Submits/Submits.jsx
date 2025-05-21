@@ -3,9 +3,9 @@ import SideBar from "../SideBar/Sidebar";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
-import "./Exams.css";
+import "./Submits.css";
 
-const Exams = () => {
+const Submits = () => {
   useAuthCheck([1, 2]);
   const navigate = useNavigate();
   const [examData, setExamData] = useState([]);
@@ -65,9 +65,7 @@ const Exams = () => {
     <div>
       <SideBar />
       <div className="option-content">
-        <Link to="/NewExam">
-          <button>Nuevo</button>
-        </Link>
+        <h1>Resultados</h1>
       </div>
       <div className="dashboard-container">
         <div className="exam-table-content">
@@ -94,7 +92,7 @@ const Exams = () => {
                         <td>
                           <a
                             onClick={() => getExamId(exam.id)}
-                            href="/EditExam"
+                            href="/SubmitsDetails"
                           >
                             {exam.id}
                           </a>
@@ -122,4 +120,4 @@ const Exams = () => {
   );
 };
 
-export default Exams;
+export default Submits;
