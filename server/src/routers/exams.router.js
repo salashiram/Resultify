@@ -13,7 +13,6 @@ const { exec } = require("child_process");
 const { json, QueryTypes } = require("sequelize");
 const pLimit = require("p-limit");
 
-//
 const deleteFilesRecursively = (folderPath) => {
   if (fs.existsSync(folderPath)) {
     const entries = fs.readdirSync(folderPath);
@@ -200,6 +199,48 @@ router.post("/create", authenticateToken, async (req, res) => {
     });
   } catch (err) {
     await transaction.rollback();
+    console.error(err);
+    res.status(500).json({ message: "Error creating exam", err });
+  }
+});
+
+// Generar hoja de respuestas
+router.post("/create-answer-sheet", async (req, res) => {
+  const { examId, questions, title } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ error: "Falta el título del examen" });
+  }
+
+  try {
+    const numQuestions = questions.length;
+    const scriptPath = path.join(
+      __dirname,
+      "..",
+      "..",
+      "processing",
+      "generate_answer_sheet.py"
+    );
+
+    const safeTitle = title.replace(/\s+/g, "_");
+
+    const command = `python3 "${scriptPath}" "${examId}" "${numQuestions}" "${safeTitle}"`;
+
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        console.error("Error al generar hoja de respuestas:", error);
+      } else {
+        console.log("PDF generado correctamente");
+        console.log(stdout);
+      }
+
+      // Siempre responder al cliente aunque falle la hoja
+      res.status(201).json({
+        message: "Exam created successfully",
+        pdfGenerated: !error,
+      });
+    });
+  } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error creating exam", err });
   }
@@ -509,6 +550,24 @@ router.post("/process-all", async (req, res) => {
 //     res.status(500).send("Error al procesar los exámenes");
 //   }
 // });
+
+// Borrar todas las hojas de respuesta
+router.delete("/clear-sheets-folder", (req, res) => {
+  try {
+    const foldersToClear = [
+      path.join(__dirname, "..", "..", "processing", "generated_pdfs"),
+    ];
+
+    foldersToClear.forEach((folderPath) => {
+      deleteFilesRecursively(folderPath);
+    });
+
+    res.json({ message: "Archivos eliminados correctamente" });
+  } catch (err) {
+    console.error("Error al limpiar los archivos:", err);
+    res.status(500).json({ error: "Error al limpiar los archivos" });
+  }
+});
 
 // Borrar datos temporales (pdf uploads,imagenes generadas, json generados)
 router.delete("/clear-temp-folders", (req, res) => {

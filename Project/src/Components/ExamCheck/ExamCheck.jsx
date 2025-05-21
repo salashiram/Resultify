@@ -201,7 +201,6 @@ const ExamCheck = () => {
         <button onClick={handleReviewClick}>
           {loading ? "Procesando..." : "Procesar exámenes"}
         </button>
-        {/* <button onClick={handleSaveData}>Guardar datos</button> */}
         <button onClick={handleSaveResults}>Guardar datos</button>
       </div>
 

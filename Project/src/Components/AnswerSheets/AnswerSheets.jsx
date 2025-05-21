@@ -25,6 +25,20 @@ const AnswerSheets = () => {
     fetchAnswerSheets();
   }, []);
 
+  // borrar todas las hojas de respuestas
+  const handleClearAnswerSheets = async () => {
+    try {
+      const response = await axios.delete(
+        "http://localhost:3001/api/v1/exams/clear-sheets-folder"
+      );
+      alert(response.data.message);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error al limpiar carpetas:", error);
+      alert("Hubo un error al intentar limpiar las carpetas.");
+    }
+  };
+
   const handlePrint = (fileName) => {
     const url = `http://localhost:3001/api/v1/exams/download-answer-sheet-file/${fileName}`;
     const printWindow = window.open(url, "_blank");
@@ -34,6 +48,10 @@ const AnswerSheets = () => {
   return (
     <div>
       <SideBar />
+
+      <div className="option-content-buttons">
+        <button onClick={handleClearAnswerSheets}>Borrar datos</button>
+      </div>
 
       <div className="sheet-container">
         <div className="sheet-content">
@@ -50,15 +68,6 @@ const AnswerSheets = () => {
                     style={{ marginLeft: "1rem" }}
                   >
                     Imprimir
-                  </button>
-                  <button
-                    style={{
-                      marginLeft: "1rem",
-                      backgroundColor: "#2e2e2e",
-                      color: "white",
-                    }}
-                  >
-                    Eliminar
                   </button>
                 </li>
               ))}

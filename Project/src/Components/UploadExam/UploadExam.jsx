@@ -134,13 +134,20 @@ const UploadExam = () => {
           {fileNames.length === 0 ? (
             <p>No hay archivos cargados</p>
           ) : (
-            <ul>
-              {fileNames.map((name, index) => (
-                <li key={index}>{name}</li>
-              ))}
-            </ul>
+            <>
+              <p>
+                Total: {fileNames.length} archivo
+                {fileNames.length > 1 ? "s" : ""}
+              </p>
+              <ul>
+                {fileNames.map((name, index) => (
+                  <li key={index}>{name}</li>
+                ))}
+              </ul>
+            </>
           )}
         </div>
+
         <button onClick={handleUpload}>Cargar</button>
       </div>
     </div>

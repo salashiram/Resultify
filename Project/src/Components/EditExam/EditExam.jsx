@@ -258,6 +258,49 @@ const EditExam = () => {
     });
     setQuestions([]);
   };
+
+  const generateAnswerSheet = async () => {
+    const token = localStorage.getItem("token");
+    const examId = localStorage.getItem("examId");
+    const questions = examData.questions; // o donde tengas tus preguntas
+    const title = examData.title;
+    if (!token || !examId || !questions || !title) {
+      console.error("Faltan datos para generar la hoja de respuestas");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "http://localhost:3001/api/v1/exams/create-answer-sheet",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // si tu endpoint está protegido
+          },
+          body: JSON.stringify({
+            examId,
+            questions,
+            title,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("✅ Hoja de respuestas generada:", data);
+        alert("La hoja de respuestas fue generada con éxito.");
+      } else {
+        console.error("❌ Error al generar hoja:", data);
+        alert("Ocurrió un error al generar la hoja de respuestas.");
+      }
+    } catch (err) {
+      console.error("❌ Error de red:", err);
+      alert("No se pudo conectar con el servidor.");
+    }
+  };
+
   return (
     <div>
       <SideBar />
@@ -270,9 +313,7 @@ const EditExam = () => {
         >
           Guardar
         </button>
-        {/* <button onClick={handleClear} type="button">
-          Limpiar
-        </button> */}
+        <button onClick={generateAnswerSheet}>Hoja de respuestas</button>
         <button>Desactivar</button>
       </div>
       <form ref={formRef} onSubmit={handleSubmit} action="">

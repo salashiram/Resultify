@@ -4,6 +4,25 @@
   box-sizing: border-box;
 }
 
+.option-content-buttons {
+  width: 100%;
+  padding: 20px;
+  margin-left: 100px;
+}
+
+.option-content-buttons button {
+  background-color: white;
+  width: 150px;
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+.option-content-buttons button:hover {
+  color: white;
+  background-color: #2e2e2e;
+  transition: 0.2s ease-in-out;
+}
 .sheet-container {
   display: flex;
   width: 100%;
@@ -19,7 +38,7 @@
   width: 90%;
   height: 100%;
   margin: auto;
-  margin-top: 100px;
+  margin-top: 10px;
   background: white;
   border-radius: 10px;
   overflow: hidden;
