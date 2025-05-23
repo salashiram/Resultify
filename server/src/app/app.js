@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -29,7 +29,7 @@ app.use("/api/v1/exams", examsRouter);
 app.use("/api/v1/uploads", uploadsRouter);
 app.use("/api/v1/submissions", submissionsRouter);
 
-app.use((err, req, res, next) => {
+app.use((err, res) => {
   res.status(500).json({
     ok: false,
     message: "Ocurrió un error en el servidor",

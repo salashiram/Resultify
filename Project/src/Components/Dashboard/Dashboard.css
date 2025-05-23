@@ -4,6 +4,19 @@
   box-sizing: border-box;
 }
 
+.header {
+  display: flex;
+  margin: 0 auto;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+.header h1 {
+  display: flex;
+  margin: 0 auto;
+}
+.header span {
+  margin-left: 30px;
+}
 .dashboard-content {
   width: 50%;
   height: auto;
@@ -49,7 +62,6 @@
   margin-right: 16px;
 }
 
-/* Contenido */
 .option-content {
   flex: 1;
 }

@@ -1,4 +1,3 @@
-import React from "react";
 import "./UploadedExamsList.css";
 
 const UploadedExamsList = ({ exams, loading }) => {

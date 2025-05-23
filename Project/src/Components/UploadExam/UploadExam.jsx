@@ -1,54 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import SideBar from "../SideBar/Sidebar";
 import { useNavigate } from "react-router-dom";
+import useAuthCheck from "../../hooks/useAuthCheck";
 import "./UploadExam.css";
 
 const UploadExam = () => {
+  useAuthCheck([1, 2]);
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
-  const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState(null);
-  const [fileName, setFileName] = useState("");
   const [fileNames, setFileNames] = useState([]);
-
-  const handleReviewClick = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        "http://localhost:3001/api/v1/exams/process-all",
-        {
-          method: "POST",
-        }
-      );
-
-      const data = await response.json();
-      setResults(data.results);
-    } catch (err) {
-      alert("Error al procesar los examenes");
-      console.error("Error al procesar los exámenes:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchExams = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:3001/api/v1/uploads/get-uploaded-exams"
-      );
-      setExams(response.data);
-    } catch (err) {
-      console.error("Error al obtener los exámenes:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchExams();
-  }, []);
 
   if (loading) {
     return <div>Cargando exámenes...</div>;
@@ -75,28 +37,38 @@ const UploadExam = () => {
 
     setLoading(true);
 
-    try {
-      const response = await axios.post(
-        "http://localhost:3001/api/v1/uploads/upload",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-      alert("Archivo subido con éxito!");
-      navigate("/ExamCheck");
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error al subir archivo", error);
-      alert("Error al subir archivo");
-    } finally {
-      setLoading(false);
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      try {
+        await axios.post(
+          `${process.env.REACT_APP_API_URL}/api/v1/uploads/upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        alert("Archivos subidos con éxito");
+        navigate("/ExamCheck");
+      } catch (error) {
+        alert("Error al subir los archivos");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      //
     }
   };
 
   return (
     <div>
       <SideBar />
+      <div className="header">
+        <h1>Cargar exámenes</h1>
+      </div>
       <div className="file-container">
         <label for="file" class="custum-file-upload">
           <div class="icon">
@@ -135,15 +107,15 @@ const UploadExam = () => {
             <p>No hay archivos cargados</p>
           ) : (
             <>
-              <p>
-                Total: {fileNames.length} archivo
-                {fileNames.length > 1 ? "s" : ""}
-              </p>
               <ul>
                 {fileNames.map((name, index) => (
                   <li key={index}>{name}</li>
                 ))}
               </ul>
+              <p>
+                Total: {fileNames.length} archivo
+                {fileNames.length > 1 ? "s" : ""}
+              </p>
             </>
           )}
         </div>

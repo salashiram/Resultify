@@ -1,19 +1,14 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import SideBar from "../SideBar/Sidebar";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
-
 import "./EditExam.css";
 
 const EditExam = () => {
-  const navigate = useNavigate();
   useAuthCheck([1, 2]);
-  // const { examId } = useParams();
-  // const { examId } = useParams();
+  const navigate = useNavigate();
   const [examData, setExamData] = useState({
     title: "",
     description: "",
@@ -28,11 +23,10 @@ const EditExam = () => {
       const token = localStorage.getItem("token");
       const exam_Id = localStorage.getItem("examId");
 
-      console.log(exam_Id);
       if (token) {
         try {
           const response = await fetch(
-            `http://localhost:3001/api/v1/exams/details/${exam_Id}`,
+            `${process.env.REACT_APP_API_URL}/api/v1/exams/details/${exam_Id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -42,9 +36,7 @@ const EditExam = () => {
 
           const data = await response.json();
 
-          console.log(data);
-
-          // Mapear datos al formato esperado por el formulario
+          // Mapear datos al formato esperado por el form
           const mappedQuestions = data.questions.map((q) => ({
             id: Date.now() + Math.random(),
             text: q.question_text,
@@ -71,10 +63,10 @@ const EditExam = () => {
 
           setQuestions(mappedQuestions);
         } catch (err) {
-          console.error("Error al cargar el examen:", err);
+          alert("Error al cargar el examen");
         }
       } else {
-        // error
+        //
       }
     };
     fetchExamData();
@@ -216,12 +208,10 @@ const EditExam = () => {
           })),
         })),
       };
-      console.log("datos enviados:", examPayload);
-      console.log("Datos a enviar:", examData);
 
       try {
         const response = await fetch(
-          "http://localhost:3001/api/v1/exams/create",
+          `${process.env.REACT_APP_API_URL}/api/v1/exams/create`,
           {
             method: "POST",
             headers: {
@@ -241,8 +231,7 @@ const EditExam = () => {
           alert(`Error al crear el examen: ${data.message}`);
         }
       } catch (error) {
-        console.error("Error:", error);
-        alert("Error al enviar los datos");
+        alert("Error al actualizar el examen");
       }
     }
   };
@@ -262,21 +251,21 @@ const EditExam = () => {
   const generateAnswerSheet = async () => {
     const token = localStorage.getItem("token");
     const examId = localStorage.getItem("examId");
-    const questions = examData.questions; // o donde tengas tus preguntas
+    const questions = examData.questions;
     const title = examData.title;
     if (!token || !examId || !questions || !title) {
-      console.error("Faltan datos para generar la hoja de respuestas");
+      alert("Faltan datos para generar la hoja de respuestas");
       return;
     }
 
     try {
       const response = await fetch(
-        "http://localhost:3001/api/v1/exams/create-answer-sheet",
+        `${process.env.REACT_APP_API_URL}/api/v1/exams/create-answer-sheet`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // si tu endpoint está protegido
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             examId,
@@ -286,17 +275,12 @@ const EditExam = () => {
         }
       );
 
-      const data = await response.json();
-
       if (response.ok) {
-        console.log("✅ Hoja de respuestas generada:", data);
         alert("La hoja de respuestas fue generada con éxito.");
       } else {
-        console.error("❌ Error al generar hoja:", data);
         alert("Ocurrió un error al generar la hoja de respuestas.");
       }
     } catch (err) {
-      console.error("❌ Error de red:", err);
       alert("No se pudo conectar con el servidor.");
     }
   };
@@ -304,6 +288,9 @@ const EditExam = () => {
   return (
     <div>
       <SideBar />
+      <div className="header">
+        <h1>Modificar examen</h1>
+      </div>
       <div className="option-content">
         <button
           type="button"

@@ -1,15 +1,13 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import SideBar from "../SideBar/Sidebar";
 import { Upload, FileText, Check, Sheet, Verified } from "lucide-react";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./MenuExam.css";
-// import { path } from "../../../../server/src/app/app";
 
 const options = [
   {
     id: 1,
-    label: "Crear examen",
+    label: "Ver exámenes",
     description: "Crear o modificar examen",
     icon: FileText,
     path: "/Exams",
@@ -38,7 +36,7 @@ const options = [
   {
     id: 5,
     label: "Resultados",
-    description: "Ver resultados de los examenes",
+    description: "Ver resultados de los examenes procesados",
     icon: Verified,
     path: "/Submits",
   },
@@ -59,6 +57,9 @@ const MenuExam = () => {
   return (
     <div>
       <SideBar />
+      <div className="header">
+        <h1>Menú exámenes</h1>
+      </div>
       <div className="dashboard-content">
         <div className="option-list">
           {options.map((option) => (

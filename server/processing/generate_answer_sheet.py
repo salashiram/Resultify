@@ -44,7 +44,7 @@ def generar_hoja_respuestas(nombre_archivo, num_preguntas=20):
             start_y = height - 1.5 * inch
 
     c.save()
-    print(f"✅ PDF generado: {nombre_archivo}")
+    print(f"PDF generado: {nombre_archivo}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:

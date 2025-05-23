@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SideBar from "../SideBar/Sidebar";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./Submits.css";
 
 const Submits = () => {
   useAuthCheck([1, 2]);
-  const navigate = useNavigate();
   const [examData, setExamData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -17,8 +14,7 @@ const Submits = () => {
 
   const fetchExams = async () => {
     try {
-      const url = "http://localhost:3001/api/v1/exams/";
-
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/exams/`;
       const token = localStorage.getItem("token");
       if (!token) {
         alert("Ocurrió un error insesperado");
@@ -48,10 +44,8 @@ const Submits = () => {
         : [];
 
       setExamData(examsArray);
-
-      console.log("Datos recibidos:", examsArray);
     } catch (err) {
-      console.error("Error", err);
+      alert("Error al cargar los exámenes");
     } finally {
       setLoading(false);
     }
@@ -64,8 +58,8 @@ const Submits = () => {
   return (
     <div>
       <SideBar />
-      <div className="option-content">
-        <h1>Resultados</h1>
+      <div className="header">
+        <h1>Visualizar resultados por examen</h1>
       </div>
       <div className="dashboard-container">
         <div className="exam-table-content">
@@ -76,7 +70,7 @@ const Submits = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>Titulo</th>
                     <th>Descripción</th>
                     <th>Grupo</th>

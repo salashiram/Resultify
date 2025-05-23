@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import SideBar from "../SideBar/Sidebar";
 import UploadedExamsList from "../UploadedExamsList/UploadedExamsList";
 import DetectedExams from "../DetectedExams/DetectedExams";
 import ExamResults from "../ExamResults/ExamResults";
+import useAuthCheck from "../../hooks/useAuthCheck";
 import "./ExamCheck.css";
 
 const ExamCheck = () => {
-  const [files, setFiles] = useState([]);
+  useAuthCheck([1, 2]);
   const [exams, setExams] = useState([]);
   const [detectedExams, setDetectedExams] = useState([]);
   const [selectExams, setSelectExams] = useState([]);
@@ -15,24 +16,6 @@ const ExamCheck = () => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [gradedResults, setGradedResults] = useState(null);
-  const [savedData, setSavedData] = useState({
-    results: null,
-    gradedResults: null,
-  });
-
-  const handleSaveData = () => {
-    if (!results && !gradedResults) {
-      alert("No hay datos para guardar.");
-      return;
-    }
-
-    setSavedData({
-      results,
-      gradedResults,
-    });
-
-    alert("Datos guardados en memoria (useState)!");
-  };
 
   const handleGradeExams = async () => {
     if (!selectedExam) {
@@ -43,27 +26,30 @@ const ExamCheck = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:3001/api/v1/exams/grade-exams",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ exam_id: selectedExam }),
+      const token = localStorage.getItem("token");
+      if (token) {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/v1/exams/grade-exams`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ exam_id: selectedExam }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Error al revisar los exámenes");
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("Error al revisar los exámenes");
+        const data = await response.json();
+        setGradedResults(data); // Guardar resultados
+      } else {
       }
-
-      const data = await response.json();
-      console.log("Resultados de exámenes:", data);
-
-      setGradedResults(data); // Guardamos los resultados aquí
     } catch (error) {
-      console.error("Error al calificar exámenes:", error);
+      alert("Ocurrió un error al revisar los exámenes");
     } finally {
       setLoading(false);
     }
@@ -72,19 +58,27 @@ const ExamCheck = () => {
   const handleReviewClick = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:3001/api/v1/exams/process-all",
-        {
-          method: "POST",
-        }
-      );
+      const token = localStorage.getItem("token");
 
-      const data = await response.json();
-      setResults(data.results);
-      window.location.reload();
+      if (token) {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/v1/exams/process-all`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+        setResults(data.results);
+        window.location.reload();
+      } else {
+        //
+      }
     } catch (err) {
       alert("Error al procesar los examenes");
-      console.error("Error al procesar los exámenes:", err);
       window.location.reload();
     } finally {
       setLoading(false);
@@ -92,7 +86,7 @@ const ExamCheck = () => {
   };
 
   const fetchSelectExams = async () => {
-    fetch("http://localhost:3001/api/v1/exams/active-exams")
+    fetch(`${process.env.REACT_APP_API_URL}/api/v1/exams/active-exams`)
       .then((res) => res.json())
       .then((data) => {
         if (data.ok) {
@@ -100,18 +94,27 @@ const ExamCheck = () => {
         }
       })
       .catch((error) => {
-        console.error("Error cargando exámenes para select:", error);
+        alert("Ocurrió un error al cargar los exámenes");
       });
   };
 
   const fetchDetectedExams = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:3001/api/v1/uploads/get-detected-exams"
-      );
-      setDetectedExams(response.data);
+      const token = localStorage.getItem("token");
+      if (token) {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/uploads/get-detected-exams`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setDetectedExams(response.data);
+      } else {
+      }
     } catch (err) {
-      console.error("Error al obtener os examenes procesados", err);
+      alert("Error al obtener los examenes procesados");
     } finally {
       setLoading(false);
     }
@@ -119,12 +122,23 @@ const ExamCheck = () => {
 
   const fetchExams = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:3001/api/v1/uploads/get-uploaded-exams"
-      );
-      setExams(response.data);
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/uploads/get-uploaded-exams`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setExams(response.data);
+      } else {
+        //
+      }
     } catch (err) {
-      console.error("Error al obtener los exámenes:", err);
+      alert("Error al obtener los exámenes");
     } finally {
       setLoading(false);
     }
@@ -142,31 +156,42 @@ const ExamCheck = () => {
 
   const handleClearTemp = async () => {
     try {
-      const response = await axios.delete(
-        "http://localhost:3001/api/v1/exams/clear-temp-folders"
-      );
-      alert(response.data.message);
-      window.location.reload();
+      const token = localStorage.getItem("token");
+      if (token) {
+        const response = await axios.delete(
+          `${process.env.REACT_APP_API_URL}/api/v1/exams/clear-temp-folders`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        alert(response.data.message);
+        window.location.reload();
+      } else {
+        //
+      }
     } catch (error) {
-      console.error("Error al limpiar carpetas:", error);
-      alert("Hubo un error al intentar limpiar las carpetas.");
+      alert("Hubo un error al intentar limpiar las carpetas");
     }
   };
 
   const handleSaveResults = async () => {
     if (!gradedResults || !Array.isArray(gradedResults.results)) {
-      alert("No hay resultados para guardar.");
+      alert("No hay resultados para guardar");
       return;
     }
 
     const { exam_id, results } = gradedResults;
 
-    results.forEach((result, index) => {
+    // debug =>
+
+    /*results.forEach((result, index) => {
       console.log(`Resultado ${index + 1}:`);
       console.log("Matrícula:", result.matricula);
       console.log("Nombre:", result.nombre_completo);
       console.log("Calificación:", result.grade);
-    });
+    });*/
 
     const payload = {
       exam_id,
@@ -178,26 +203,29 @@ const ExamCheck = () => {
     };
 
     try {
-      const response = await fetch(
-        "http://localhost:3001/api/v1/submissions/saveResults",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
+      const token = localStorage.getItem("token");
+      if (token) {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/v1/submissions/saveResults`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("No se pudieron guardar los resultados");
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("No se pudieron guardar los resultados");
+        alert("Resultados guardados correctamente");
+      } else {
+        //
       }
-
-      const data = await response.json();
-      alert("Resultados guardados correctamente");
-      console.log("Respuesta del servidor:", data);
     } catch (error) {
-      console.error("Error al guardar resultados:", error);
       alert("Error al guardar resultados");
     }
   };
@@ -205,6 +233,9 @@ const ExamCheck = () => {
   return (
     <div>
       <SideBar />
+      <div className="header">
+        <h1>Procesar y revisar exámenes</h1>
+      </div>
       <div className="option-content">
         <button onClick={handleClearTemp}>Borrar datos</button>
         <button onClick={handleReviewClick}>

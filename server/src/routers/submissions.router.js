@@ -1,17 +1,7 @@
 const router = require("express").Router();
-const jwt = require("jsonwebtoken");
 const authenticateToken = require("../middleware/authMiddleware.middleware");
 const Submissions = require("../models/submissions.model");
-
 const sequelize = require("../connection");
-const fs = require("fs");
-const path = require("path");
-const { exec } = require("child_process");
-const { json, QueryTypes } = require("sequelize");
-const { parse } = require("path/posix");
-const { ok } = require("assert");
-
-module.exports = router;
 
 router.get("/", async (req, res) => {
   const submissions = await Submissions.findAll();
@@ -23,7 +13,7 @@ router.get("/", async (req, res) => {
 });
 
 // agrupar submissions por examen
-router.get("/getSubmissions/:id", async (req, res) => {
+router.get("/getSubmissions/:id", authenticateToken, async (req, res) => {
   try {
     const id = req.params.id;
     const result = await sequelize.query("call spGetSubmissions(:exam_id)", {
@@ -43,7 +33,6 @@ router.get("/getSubmissions/:id", async (req, res) => {
       data: result,
     });
   } catch (err) {
-    console.error("Error ", err);
     res.status(500).json({
       ok: false,
       message: "Error fetching data",
@@ -52,7 +41,7 @@ router.get("/getSubmissions/:id", async (req, res) => {
 });
 
 // guardar submisions
-router.post("/saveResults", async (req, res) => {
+router.post("/saveResults", authenticateToken, async (req, res) => {
   try {
     const { results, exam_id } = req.body;
 
@@ -62,13 +51,11 @@ router.post("/saveResults", async (req, res) => {
 
     const submissionsToCreate = results
       .map((entry) => {
-        console.log(entry.grade);
         const score = parseFloat(entry.grade);
         const student_id =
           entry.matricula === "default" ? null : parseInt(entry.matricula);
 
         if (isNaN(score)) {
-          console.warn("Registro omitido por calificación inválida:", entry);
           return null;
         }
 
@@ -93,7 +80,8 @@ router.post("/saveResults", async (req, res) => {
       .status(201)
       .json({ message: "Submissions guardadas exitosamente." });
   } catch (error) {
-    console.error("Error al guardar submissions:", error);
     return res.status(500).json({ error: "Error interno al guardar." });
   }
 });
+
+module.exports = router;

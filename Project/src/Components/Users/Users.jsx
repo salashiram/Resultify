@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import SideBar from "../SideBar/Sidebar";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -20,7 +20,7 @@ const Users = () => {
 
       if (token) {
         const response = await axios.get(
-          `http://localhost:3001/api/v1/users/${userId}`,
+          `${process.env.REACT_APP_API_URL}/api/v1/users/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -28,70 +28,30 @@ const Users = () => {
           }
         );
 
-        console.log(response.data);
         const user = response.data;
         setUserData(response.data.data);
       } else {
-        // error
+        //
       }
     } catch (err) {
-      console.error("Error al buscar el usuario", err);
+      alert("Error al buscar el usuario");
       setUserData([]);
     }
   };
 
-  const fetchUsers = async () => {
-    try {
-      const url = "http://localhost:3001/api/v1/users/";
-
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Ocurrió un error inesperado");
-        return;
-      }
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al cargar los usuarios");
-      }
-
-      const data = await response.json();
-      const usersArray = Array.isArray(data)
-        ? data.flat()
-        : data.data
-        ? Array.isArray(data.data)
-          ? data.data.flat()
-          : [data.data]
-        : [];
-
-      setUserData(usersArray);
-      console.log("Datos recibidos");
-    } catch (err) {
-      console.log("Error", err);
-    } finally {
-    }
-  };
-
-  useEffect(() => {
-    // fetchUsers();
-  }, []);
-
   return (
     <div>
       <SideBar />
+
+      <div className="header">
+        <h1>Usuarios</h1>
+      </div>
+
       <div className="option-content">
         <Link to="/NewUser">
           <button>Nuevo usuario</button>
         </Link>
       </div>
-
       <div className="search-content">
         <input
           value={userId}
@@ -101,7 +61,6 @@ const Users = () => {
         />
         <button onClick={searchUser}>Buscar</button>
       </div>
-
       <div className="dashboard-container">
         <div className="users-table-content">
           <div className="users-table">
@@ -109,7 +68,7 @@ const Users = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>Email</th>
                     <th>Matrícula</th>
                     <th>Nombre</th>

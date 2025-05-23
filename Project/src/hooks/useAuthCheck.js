@@ -12,13 +12,12 @@ const useAuthCheck = (allowedRoles = []) => {
         navigate("/");
         return;
       }
-
       try {
         const decoded = jwtDecode(token);
         const userId = decoded.id;
 
         const response = await fetch(
-          `http://localhost:3001/api/v1/users/${userId}`,
+          `${process.env.REACT_APP_API_URL}/api/v1/users/${userId}`,
           {
             method: "GET",
             headers: {
@@ -28,18 +27,18 @@ const useAuthCheck = (allowedRoles = []) => {
           }
         );
 
-        if (!response.ok) throw new Error("Error al obtener datos del usuario");
+        // if (!response.ok) throw new Error("Error al obtener datos del usuario");
 
         const result = await response.json();
 
         if (result.ok) {
           const userRole = result.data[0].userRol;
           if (!allowedRoles.includes(userRole)) {
-            navigate("/Home"); // Si no tiene permiso, redirige
+            navigate("/UserProfile"); // Si no tiene permiso, redirige
           }
         }
       } catch (error) {
-        console.error("Error al obtener datos del usuario:", error);
+        alert("Error al obtener los datos del usuario");
         navigate("/");
       }
     };

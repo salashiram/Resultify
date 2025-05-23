@@ -30,7 +30,7 @@ text = pytesseract.image_to_string(thresholded, config=custom_config)
 print("\nTexto detectado:")
 print(text)
 
-# ✅ 1. Asociar preguntas con respuestas
+# 1. Asociar preguntas con respuestas
 # Expresión regular para capturar "1. true", "2. false", etc.
 pattern = re.compile(r'(\d+)\.\s*(true|false)', re.IGNORECASE)
 matches = pattern.findall(text)
@@ -46,12 +46,12 @@ for match in matches:
         "answer": answer
     })
 
-# ✅ 2. Mostrar las preguntas asociadas con sus respuestas
+# 2. Mostrar las preguntas asociadas con sus respuestas
 print("\nPreguntas detectadas con respuestas:")
 for q in questions_with_answers:
     print(f"Pregunta {q['question_number']}: {q['answer']}")
 
-# ✅ 3. Guardar el resultado en un archivo JSON (opcional)
+# 3. Guardar el resultado en un archivo JSON (opcional)
 import json
 output_file = "detected_exam.json"
 with open(output_file, "w") as f:

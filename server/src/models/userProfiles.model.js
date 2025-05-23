@@ -1,6 +1,5 @@
-const { Sequelize, Model, DataTypes } = require("sequelize");
+const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../connection");
-const Users = require("./users.model");
 
 class UserProfiles extends Model {}
 
@@ -45,9 +44,5 @@ UserProfiles.init(
     tableName: "UserProfiles",
   }
 );
-
-// UserProfiles.belongsTo(Users, {
-//   foreignKey: "user_id",
-// });
 
 module.exports = UserProfiles;

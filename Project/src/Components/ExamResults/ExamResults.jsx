@@ -20,7 +20,6 @@ const ExamResults = ({ results }) => {
         <h2>Resultados del examen #{results.exam_id}</h2>
         <p>Total de exámenes procesados: {results.total_exams_processed}</p>
 
-        {/* Tabla */}
         <table className="results-table">
           <thead>
             <tr>
@@ -50,7 +49,6 @@ const ExamResults = ({ results }) => {
           </tbody>
         </table>
 
-        {/* Modal */}
         {selectedStudent && (
           <div className="modal-overlay" onClick={closeModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -61,7 +59,7 @@ const ExamResults = ({ results }) => {
                     Pregunta {question.question_number}: Respuesta usuario:{" "}
                     {question.user_answer} | Respuesta correcta:{" "}
                     {question.correct_answer} |{" "}
-                    {question.is_correct ? "✅ Correcta" : "❌ Incorrecta"}
+                    {question.is_correct ? "Correcta" : "Incorrecta"}
                   </li>
                 ))}
               </ul>

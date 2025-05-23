@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header-results {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 50px;
+}
+
+.header-results h2 {
+  font-size: 30px;
+}

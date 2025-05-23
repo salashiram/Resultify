@@ -1,15 +1,14 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import SideBar from "../SideBar/Sidebar";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./NewExam.css";
 
 const NewExam = () => {
-  const navigate = useNavigate();
   useAuthCheck([1, 2]);
+  const navigate = useNavigate();
   const [examData, setExamData] = useState({
     title: "",
     description: "",
@@ -164,12 +163,10 @@ const NewExam = () => {
           })),
         })),
       };
-      console.log("datos enviados:", examPayload);
-      console.log("Datos a enviar:", examData);
 
       try {
         const response = await fetch(
-          "http://localhost:3001/api/v1/exams/create",
+          `${process.env.REACT_APP_API_URL}/api/v1/exams/create`,
           {
             method: "POST",
             headers: {
@@ -189,8 +186,7 @@ const NewExam = () => {
           alert(`Error al crear el examen: ${data.message}`);
         }
       } catch (error) {
-        console.error("Error:", error);
-        alert("Error al enviar los datos");
+        alert("Error al crear el examen");
       }
     }
   };
@@ -209,6 +205,9 @@ const NewExam = () => {
   return (
     <div>
       <SideBar />
+      <div className="header">
+        <h1>Crear examen</h1>
+      </div>
       <div className="option-content">
         <button
           type="button"

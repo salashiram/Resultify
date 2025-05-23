@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import SideBar from "../SideBar/Sidebar";
 import { jwtDecode } from "jwt-decode";
@@ -19,7 +19,7 @@ const UserProfile = () => {
         const userId = decoded.id;
 
         const response = await fetch(
-          `http://localhost:3001/api/v1/users/${userId}`,
+          `${process.env.REACT_APP_API_URL}/api/v1/users/${userId}`,
           {
             method: "GET",
             headers: {

@@ -76,7 +76,6 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       ok: false,
       message: "Error logging in",
@@ -142,7 +141,6 @@ router.get("/:id", authenticateToken, async (req, res) => {
       data: result,
     });
   } catch (err) {
-    console.error("Error", err);
     res.status(500).json({
       ok: false,
       message: "Error fetching user data",
@@ -256,7 +254,6 @@ router.put("/update/:iduser", authenticateToken, async (req, res) => {
 
     res.json({ ok: true, message: "Usuario actualizado exitosamente" });
   } catch (err) {
-    console.error("Error updating user", err);
     res.status(500).json({
       ok: false,
       message: "Error actualizando el usuario",
@@ -268,8 +265,6 @@ router.put("/update/:iduser", authenticateToken, async (req, res) => {
 router.put("/deactivate/:idUser", authenticateToken, async (req, res) => {
   const { idUser } = req.params;
   const { param } = req.body;
-
-  console.log(param);
 
   if (!param) {
     return res.status(400).json({
@@ -291,7 +286,6 @@ router.put("/deactivate/:idUser", authenticateToken, async (req, res) => {
       message: "User updated",
     });
   } catch (err) {
-    console.error("Error", err);
     res.status(500).json({
       ok: false,
       message: "Error",
@@ -303,8 +297,6 @@ router.put("/deactivate/:idUser", authenticateToken, async (req, res) => {
 router.put("/update/pass/:idUser", authenticateToken, async (req, res) => {
   const { idUser } = req.params;
   const { password_hash } = req.body;
-
-  console.log("Password: ", password_hash);
 
   if (!password_hash) {
     return res.status(400).json({
@@ -328,7 +320,6 @@ router.put("/update/pass/:idUser", authenticateToken, async (req, res) => {
       message: "password updated",
     });
   } catch (err) {
-    console.error("Error", err);
     res.status(500).json({
       ok: false,
       message: "Error",

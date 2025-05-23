@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -16,7 +16,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/api/v1/users/login",
+        `${process.env.REACT_APP_API_URL}/api/v1/users/login`,
         {
           email: loginData.logEmail,
           password: loginData.logPassword,
@@ -28,8 +28,7 @@ const Login = () => {
         navigate("/UserProfile");
       }
     } catch (err) {
-      // err.response?.data?.message;
-      alert("Las credenciales no son válidas");
+      alert("Las credenciales no son válidas"); // err.response?.data?.message;
     }
   };
 

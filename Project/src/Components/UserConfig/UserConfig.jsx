@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import SideBar from "../SideBar/Sidebar";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
-import { jwtDecode } from "jwt-decode";
 import "./UserConfig.css";
 
 const UserConfig = () => {
@@ -35,7 +34,7 @@ const UserConfig = () => {
       if (token) {
         try {
           const response = await axios.get(
-            `http://localhost:3001/api/v1/users/${idUser}`,
+            `${process.env.REACT_APP_API_URL}/api/v1/users/${idUser}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -55,13 +54,13 @@ const UserConfig = () => {
               is_active: user.is_active,
             });
           } else {
-            console.error("Error fetching user data", response.data.message);
+            alert("Error al consultar la información del usuario"); // response.data.message
           }
         } catch (err) {
-          console.error("Error fetching user data", err);
+          alert("Error al consultar la información del usuario"); // response.data.message
         }
       } else {
-        // enviar a login
+        //
       }
     };
     fetchUserData();
@@ -79,15 +78,12 @@ const UserConfig = () => {
       password_hash: formData.passwordHash,
     };
 
-    console.log("password: ", updatedData);
-    console.log("password: ", formData.passwordHash);
-
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("idUser");
     if (token) {
       try {
         const response = await axios.put(
-          `http://localhost:3001/api/v1/users/update/pass/${userId}`,
+          `${process.env.REACT_APP_API_URL}/api/v1/users/update/pass/${userId}`,
           updatedData,
           {
             headers: {
@@ -96,16 +92,13 @@ const UserConfig = () => {
           }
         );
 
-        console.log("Datos enviados al backend:", updatedData);
-        console.log("Usuario actualizado:", response.data);
         alert("Se actualizó el usuario correctamente");
         navigate("/UserProfile");
       } catch (err) {
-        console.error("Error al actualizar el usuario", err);
         alert("Ocurrió un error al actualizar el usuario");
       }
     } else {
-      // enviar a login
+      //
     }
   };
 
@@ -116,12 +109,9 @@ const UserConfig = () => {
     if (token) {
       try {
         const newStatus = formData.is_active === 1 ? 2 : 1;
-
         const numericParam = Number(newStatus);
-        console.log(newStatus);
-
         await axios.put(
-          `http://localhost:3001/api/v1/users/deactivate/${userId}`,
+          `${process.env.REACT_APP_API_URL}/api/v1/users/deactivate/${userId}`,
           { param: numericParam },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -130,16 +120,19 @@ const UserConfig = () => {
         setFormData({ ...formData, is_active: newStatus });
         navigate("/Users");
       } catch (error) {
-        console.error("Error al actualizar", error);
+        alert("Error al actualizar el usuario");
       }
     } else {
-      // error
+      //
     }
   };
 
   return (
     <div>
       <SideBar />
+      <div className="header">
+        <h1>Modificar contraseña de usuario</h1>
+      </div>
       <div className="option-content">
         <button
           onClick={() => {

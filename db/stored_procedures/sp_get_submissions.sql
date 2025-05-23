@@ -3,7 +3,7 @@
 	delimiter //
 	create procedure spGetSubmissions 
 	(
-		in exam_id int
+		in exam_id_p int
 	)
 		begin
 			SELECT 
@@ -15,12 +15,10 @@
 			  Exams.title AS examen,
 			  Exams.description AS description
 			FROM Submissions
-			INNER JOIN Exams ON Submissions.exam_id = Exams.id;
+			INNER JOIN Exams ON Submissions.exam_id = Exams.id
+			WHERE Submissions.exam_id = exam_id_p;
 		end //
 	delimiter ;
-    
-    call spGetSubmissions(29);
- 
     
     
  

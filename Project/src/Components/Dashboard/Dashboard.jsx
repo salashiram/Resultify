@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import SideBar from "../SideBar/Sidebar";
 import { User, FileText } from "lucide-react";
@@ -37,6 +36,11 @@ const Dashboard = () => {
   return (
     <div>
       <SideBar />
+
+      <div className="header">
+        <h1>Menú de opciones</h1>
+      </div>
+
       <div className="dashboard-content">
         <div className="option-list">
           {options.map((option) => (

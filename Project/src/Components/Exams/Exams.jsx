@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SideBar from "../SideBar/Sidebar";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./Exams.css";
 
 const Exams = () => {
   useAuthCheck([1, 2]);
-  const navigate = useNavigate();
   const [examData, setExamData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -17,7 +15,7 @@ const Exams = () => {
 
   const fetchExams = async () => {
     try {
-      const url = "http://localhost:3001/api/v1/exams/";
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/exams/`;
 
       const token = localStorage.getItem("token");
       if (!token) {
@@ -48,10 +46,8 @@ const Exams = () => {
         : [];
 
       setExamData(examsArray);
-
-      console.log("Datos recibidos:", examsArray);
     } catch (err) {
-      console.error("Error", err);
+      alert("Error al cargar los exámenes");
     } finally {
       setLoading(false);
     }
@@ -64,6 +60,9 @@ const Exams = () => {
   return (
     <div>
       <SideBar />
+      <div className="header">
+        <h1>Exámenes</h1>
+      </div>
       <div className="option-content">
         <Link to="/NewExam">
           <button>Nuevo</button>
@@ -78,7 +77,7 @@ const Exams = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>Titulo</th>
                     <th>Descripción</th>
                     <th>Grupo</th>

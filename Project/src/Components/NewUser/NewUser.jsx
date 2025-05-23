@@ -1,14 +1,13 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import SideBar from "../SideBar/Sidebar";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./NewUser.css";
 
 const NewUser = () => {
-  const navigate = useNavigate();
   useAuthCheck([1, 2]);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     student_id: "",
@@ -53,10 +52,8 @@ const NewUser = () => {
           return;
         }
 
-        console.log(formData);
-
         const response = await axios.post(
-          "http://localhost:3001/api/v1/users/register",
+          `${process.env.REACT_APP_API_URL}/api/v1/users/register`,
           {
             email: formData.email,
             student_id: formData.student_id,
@@ -86,7 +83,6 @@ const NewUser = () => {
           } else if (errorMessage === "Student id already exists") {
             alert("La matricula ya está registrada");
           } else {
-            console.log(errorMessage);
             alert("Ocurrió un error al registrar el usuario.");
           }
         } else {
@@ -94,13 +90,16 @@ const NewUser = () => {
         }
       }
     } else {
-      // error
+      //
     }
   };
 
   return (
     <div>
       <SideBar />
+      <div className="header">
+        <h1>Crear usuario</h1>
+      </div>
       <div className="option-content">
         <button
           onClick={() => {

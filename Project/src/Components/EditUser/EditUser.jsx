@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import SideBar from "../SideBar/Sidebar";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./EditUser.css";
 import { jwtDecode } from "jwt-decode";
 
@@ -19,8 +19,6 @@ const EditUser = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const [alertMessage, setAlertMessage] = useState("");
-
   const formRef = useRef();
 
   useEffect(() => {
@@ -32,7 +30,7 @@ const EditUser = () => {
         const userId = decodedToken.id;
         try {
           const response = await axios.get(
-            `http://localhost:3001/api/v1/users/${userId}`,
+            `${process.env.REACT_APP_API_URL}/api/v1/users/${userId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -50,13 +48,13 @@ const EditUser = () => {
               phoneNumber: user.phone_number,
             });
           } else {
-            console.error("Error fetching user data", response.data.message);
+            alert("Hubo un error al cargar la información "); // response.data.message
           }
         } catch (err) {
-          console.error("Error fetching user data", err);
+          alert("Hubo un error al cargar la información "); // err
         }
       } else {
-        // enviar a login
+        //
       }
     };
     fetchUserData();
@@ -73,10 +71,8 @@ const EditUser = () => {
       const userId = decodedToken.id;
 
       try {
-        // const response = await axios.put({});
-
         const response = await axios.put(
-          `http://localhost:3001/api/v1/users/update/${userId}`,
+          `${process.env.REACT_APP_API_URL}/api/v1/users/update/${userId}`,
           updatedData,
           {
             headers: {
@@ -85,22 +81,21 @@ const EditUser = () => {
           }
         );
 
-        console.log("Datos enviados al backend:", updatedData);
-        console.log("Usuario actualizado:", response.data);
         alert("Se actualizó el usuario correctamente");
         navigate("/UserProfile");
       } catch (err) {
-        console.error("Error al actualizar el usuario", err);
         alert("Ocurrió un error al actualizar el usuario");
       }
     } else {
-      // enviar a login
     }
   };
 
   return (
     <div>
       <SideBar />
+      <div className="header">
+        <h1>Modificar datos de usuario</h1>
+      </div>
       <div className="option-content">
         <button
           onClick={() => {

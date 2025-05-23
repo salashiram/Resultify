@@ -1,8 +1,6 @@
-import { Link } from "react-router-dom";
 import SideBar from "../SideBar/Sidebar";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { Upload, FileText, Check, Sheet } from "lucide-react";
 import useAuthCheck from "../../hooks/useAuthCheck";
 import "./AnswerSheets.css";
 
@@ -13,34 +11,54 @@ const AnswerSheets = () => {
   useEffect(() => {
     const fetchAnswerSheets = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3001/api/v1/exams/list-answer-sheets"
-        );
-        setAnswerSheets(response.data);
+        const token = localStorage.getItem("token");
+
+        if (token) {
+          const response = await axios.get(
+            `${process.env.REACT_APP_API_URL}/api/v1/exams/list-answer-sheets`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setAnswerSheets(response.data);
+        } else {
+          //
+        }
       } catch (err) {
-        console.error("Error al obtener hojas de respuestas", err);
+        alert("Error al cargar hojas de respuestas");
       }
     };
 
     fetchAnswerSheets();
   }, []);
 
-  // borrar todas las hojas de respuestas
   const handleClearAnswerSheets = async () => {
     try {
-      const response = await axios.delete(
-        "http://localhost:3001/api/v1/exams/clear-sheets-folder"
-      );
-      alert(response.data.message);
-      window.location.reload();
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        const response = await axios.delete(
+          `${process.env.REACT_APP_API_URL}/api/v1/exams/clear-sheets-folder`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        alert(response.data.message);
+        window.location.reload();
+      } else {
+        //
+      }
     } catch (error) {
-      console.error("Error al limpiar carpetas:", error);
       alert("Hubo un error al intentar limpiar las carpetas.");
     }
   };
 
   const handlePrint = (fileName) => {
-    const url = `http://localhost:3001/api/v1/exams/download-answer-sheet-file/${fileName}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/v1/exams/download-answer-sheet-file/${fileName}`;
     const printWindow = window.open(url, "_blank");
     printWindow.onload = () => printWindow.print();
   };
@@ -49,6 +67,9 @@ const AnswerSheets = () => {
     <div>
       <SideBar />
 
+      <div className="header">
+        <h1>Hojas de respuestas</h1>
+      </div>
       <div className="option-content-buttons">
         <button onClick={handleClearAnswerSheets}>Borrar datos</button>
       </div>

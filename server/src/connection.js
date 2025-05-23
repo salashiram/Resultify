@@ -1,13 +1,13 @@
 const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(
-  "Resultify",
-  "root",
+  process.env.DB_NAME || "Resultify",
+  process.env.DB_USER || "root",
   process.env.DB_PASS_CONNECTION,
   {
-    host: "localhost",
+    host: process.env.DB_HOST || "localhost",
     dialect: "mysql",
-    port: "3306",
+    port: process.env.DB_PORT || "3306",
   }
 );
 

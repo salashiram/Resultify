@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import SideBar from "../SideBar/Sidebar";
+import useAuthCheck from "../../hooks/useAuthCheck";
+import "./SubmitsDetails.css";
 
 const SubmitDetails = () => {
-  const examId = localStorage.getItem("examId");
-
+  useAuthCheck([1, 2]);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const examId = localStorage.getItem("examId");
 
   const fetchSubmissions = async () => {
     try {
       const token = localStorage.getItem("token");
+
       const response = await fetch(
-        `http://localhost:3001/api/v1/submissions/getSubmissions/${examId}`,
+        `${process.env.REACT_APP_API_URL}/api/v1/submissions/getSubmissions/${examId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -29,7 +31,7 @@ const SubmitDetails = () => {
         setSubmissions([]);
       }
     } catch (error) {
-      console.error("Error al cargar submissions:", error);
+      alert("Error al cargar los resultados");
       setSubmissions([]);
     } finally {
       setLoading(false);
@@ -43,31 +45,38 @@ const SubmitDetails = () => {
   return (
     <div>
       <SideBar />
+      <div className="header">
+        <h1>
+          {submissions[0]?.examen ? (
+            <>
+              Resultados del examen: <span>{submissions[0].examen}</span>
+            </>
+          ) : (
+            <>No hay resultados para este examen</>
+          )}
+        </h1>{" "}
+      </div>
+      <div className="header"></div>
       <div className="dashboard-container">
-        <h2>Entregas del examen</h2>
         {loading ? (
           <p>Cargando...</p>
         ) : submissions.length > 0 ? (
           <table>
             <thead>
               <tr>
-                <th>ID</th>
+                <th>#</th>
                 <th>Alumno</th>
                 <th>Matrícula</th>
                 <th>Calificación</th>
-                <th>Examen</th>
-                <th>Descripción</th>
               </tr>
             </thead>
             <tbody>
-              {submissions.map((submission) => (
-                <tr key={submission.id}>
+              {submissions.map((submission, index) => (
+                <tr key={`${submission.id}-${index}`}>
                   <td>{submission.id}</td>
                   <td>{submission.alumno}</td>
                   <td>{submission.matricula || "N/A"}</td>
                   <td>{submission.calificacion}</td>
-                  <td>{submission.examen}</td>
-                  <td>{submission.description}</td>
                 </tr>
               ))}
             </tbody>

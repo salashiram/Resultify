@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import "./Sidebar.css";
-import "../../App.css";
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -31,7 +30,7 @@ const Sidebar = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.id;
         const response = await fetch(
-          `http://localhost:3001/api/v1/users/${userId}`,
+          `${process.env.REACT_APP_API_URL}/api/v1/users/${userId}`,
           {
             method: "GET",
             headers: {
@@ -45,7 +44,7 @@ const Sidebar = () => {
           setUserData(result.data[0]);
         }
       } catch (error) {
-        console.error("Error al obtener datos del usuario:", error);
+        // alert("Error al obtener datos del usuario");
       }
     };
 
@@ -55,8 +54,6 @@ const Sidebar = () => {
   const dashboardRedirect = () => navigate("/Dashboard");
   const toggleSidebar = () => setIsOpen(!isOpen);
   const logOut = () => {
-    // Llamar api para destruir token // SOLO DESHACE TOKEN DE MANERA LOCAL.
-    // TODO: Crear api para destruir token desde raiz.
     localStorage.removeItem("token");
     navigate("/");
   };
