@@ -27,7 +27,7 @@ const useAuthCheck = (allowedRoles = []) => {
           }
         );
 
-        // if (!response.ok) throw new Error("Error al obtener datos del usuario");
+        if (!response.ok) throw new Error("Error al obtener datos del usuario");
 
         const result = await response.json();
 
@@ -38,8 +38,7 @@ const useAuthCheck = (allowedRoles = []) => {
           }
         }
       } catch (error) {
-        alert("Error al obtener los datos del usuario");
-        navigate("/");
+        throw new Error("Error inesperado al obtener datos del usuario");
       }
     };
 

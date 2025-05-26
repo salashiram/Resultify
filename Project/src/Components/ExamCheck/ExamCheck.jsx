@@ -57,10 +57,11 @@ const ExamCheck = () => {
 
   const handleReviewClick = async () => {
     setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
 
-      if (token) {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      try {
         const response = await fetch(
           `${process.env.REACT_APP_API_URL}/api/v1/exams/process-all`,
           {
@@ -74,14 +75,14 @@ const ExamCheck = () => {
         const data = await response.json();
         setResults(data.results);
         window.location.reload();
-      } else {
-        //
+      } catch (err) {
+        alert("Error al procesar los examenes");
+        window.location.reload();
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      alert("Error al procesar los examenes");
-      window.location.reload();
-    } finally {
-      setLoading(false);
+    } else {
+      //
     }
   };
 
