@@ -1,0 +1,68 @@
+{
+    "nombre_completo": "Humberto Hiram Salas Tenorio",
+    "matricula": "default",
+    "grupo": "default",
+    "preguntas_detectadas": [
+        {
+            "question_number": 1,
+            "answer": "b"
+        },
+        {
+            "question_number": 2,
+            "answer": "b"
+        },
+        {
+            "question_number": 3,
+            "answer": "b"
+        },
+        {
+            "question_number": 4,
+            "answer": "a"
+        },
+        {
+            "question_number": 5,
+            "answer": "b"
+        },
+        {
+            "question_number": 6,
+            "answer": "b"
+        },
+        {
+            "question_number": 7,
+            "answer": "a"
+        },
+        {
+            "question_number": 8,
+            "answer": "b"
+        },
+        {
+            "question_number": 9,
+            "answer": "a"
+        },
+        {
+            "question_number": 10,
+            "answer": "a"
+        },
+        {
+            "question_number": 11,
+            "answer": "a"
+        },
+        {
+            "question_number": 12,
+            "answer": "a"
+        },
+        {
+            "question_number": 13,
+            "answer": "b"
+        },
+        {
+            "question_number": 14,
+            "answer": "b"
+        },
+        {
+            "question_number": 15,
+            "answer": "a"
+        }
+    ],
+    "imagen_procesada": "/Users/hiramsalas/Documents/Resultify/server/processing/output_images/1748541609081-7455/page_1.png"
+}
